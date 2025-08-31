@@ -61,18 +61,42 @@
   },
   "typesVersions": {
     "*": {
-      "cmd": ["./dist/core/cmd.d.ts"],
-      "menu": ["./dist/core/menu.d.ts"],
-      "msg": ["./dist/core/msg.d.ts"],
-      "resource": ["./dist/core/resource.d.ts"],
-      "sound": ["./dist/core/sound.d.ts"],
-      "entity": ["./dist/enhanced/entity.d.ts"],
-      "events": ["./dist/enhanced/events.d.ts"],
-      "player": ["./dist/enhanced/player.d.ts"],
-      "trace": ["./dist/enhanced/trace.d.ts"],
-      "cvar": ["./dist/native/cvar.d.ts"],
-      "file": ["./dist/native/file.d.ts"],
-      "util": ["./dist/utils/util.d.ts"]
+      "cmd": [
+        "./dist/core/cmd.d.ts"
+      ],
+      "menu": [
+        "./dist/core/menu.d.ts"
+      ],
+      "msg": [
+        "./dist/core/msg.d.ts"
+      ],
+      "resource": [
+        "./dist/core/resource.d.ts"
+      ],
+      "sound": [
+        "./dist/core/sound.d.ts"
+      ],
+      "entity": [
+        "./dist/enhanced/entity.d.ts"
+      ],
+      "events": [
+        "./dist/enhanced/events.d.ts"
+      ],
+      "player": [
+        "./dist/enhanced/player.d.ts"
+      ],
+      "trace": [
+        "./dist/enhanced/trace.d.ts"
+      ],
+      "cvar": [
+        "./dist/native/cvar.d.ts"
+      ],
+      "file": [
+        "./dist/native/file.d.ts"
+      ],
+      "util": [
+        "./dist/utils/util.d.ts"
+      ]
     }
   },
   "scripts": {
@@ -114,12 +138,33 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-org/nodemod-plugins.git"
+    "url": "git+https://github.com/nodemod/core-goldsrc.git"
   },
   "bugs": {
-    "url": "https://github.com/your-org/nodemod-plugins/issues"
+    "url": "https://github.com/nodemod/core-goldsrc/issues"
   },
-  "homepage": "https://github.com/your-org/nodemod-plugins#readme",
+  "homepage": "https://github.com/nodemod/core-goldsrc#readme",
   "author": "NodeMod Team",
-  "license": "MIT"
+  "license": "MIT",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "argparse": "^2.0.1",
+    "balanced-match": "^1.0.2",
+    "brace-expansion": "^2.0.2",
+    "entities": "^4.5.0",
+    "linkify-it": "^5.0.0",
+    "lunr": "^2.3.9",
+    "markdown-it": "^14.1.0",
+    "mdurl": "^2.0.0",
+    "minimatch": "^9.0.5",
+    "punycode.js": "^2.3.1",
+    "uc.micro": "^2.1.0",
+    "undici-types": "^6.21.0",
+    "yaml": "^2.8.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
