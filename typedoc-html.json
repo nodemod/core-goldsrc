@@ -1,0 +1,56 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./src/core/*.ts",
+    "./src/enhanced/*.ts", 
+    "./src/native/*.ts",
+    "./src/utils/*.ts",
+    "./types"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "./docs-html",
+  "readme": "./README.md",
+  "name": "NodeMod Core",
+  "includeVersion": true,
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeExternals": false,
+  "hideGenerator": false,
+  "validation": {
+    "notExported": false,
+    "invalidLink": true,
+    "notDocumented": false
+  },
+  "githubPages": true,
+  "categorizeByGroup": true,
+  "sort": ["source-order"],
+  "theme": "default",
+  "kindSortOrder": [
+    "Document",
+    "Project",
+    "Module",
+    "Namespace", 
+    "Enum",
+    "EnumMember",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Constructor",
+    "Property",
+    "Method",
+    "Function",
+    "Variable"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/dist/**/*",
+    "**/node_modules/**/*"
+  ],
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "searchInComments": true,
+  "searchInDocuments": true
+}

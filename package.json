@@ -1,0 +1,125 @@
+{
+  "name": "@nodemod/core",
+  "version": "1.0.0",
+  "description": "TypeScript-first NodeMod core library for Half-Life server plugins",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./cmd": {
+      "types": "./dist/core/cmd.d.ts",
+      "default": "./dist/core/cmd.js"
+    },
+    "./menu": {
+      "types": "./dist/core/menu.d.ts",
+      "default": "./dist/core/menu.js"
+    },
+    "./msg": {
+      "types": "./dist/core/msg.d.ts",
+      "default": "./dist/core/msg.js"
+    },
+    "./resource": {
+      "types": "./dist/core/resource.d.ts",
+      "default": "./dist/core/resource.js"
+    },
+    "./sound": {
+      "types": "./dist/core/sound.d.ts",
+      "default": "./dist/core/sound.js"
+    },
+    "./entity": {
+      "types": "./dist/enhanced/entity.d.ts",
+      "default": "./dist/enhanced/entity.js"
+    },
+    "./events": {
+      "types": "./dist/enhanced/events.d.ts",
+      "default": "./dist/enhanced/events.js"
+    },
+    "./player": {
+      "types": "./dist/enhanced/player.d.ts",
+      "default": "./dist/enhanced/player.js"
+    },
+    "./trace": {
+      "types": "./dist/enhanced/trace.d.ts",
+      "default": "./dist/enhanced/trace.js"
+    },
+    "./cvar": {
+      "types": "./dist/native/cvar.d.ts",
+      "default": "./dist/native/cvar.js"
+    },
+    "./file": {
+      "types": "./dist/native/file.d.ts",
+      "default": "./dist/native/file.js"
+    },
+    "./util": {
+      "types": "./dist/utils/util.d.ts",
+      "default": "./dist/utils/util.js"
+    },
+    "./dist/*": "./dist/*"
+  },
+  "typesVersions": {
+    "*": {
+      "cmd": ["./dist/core/cmd.d.ts"],
+      "menu": ["./dist/core/menu.d.ts"],
+      "msg": ["./dist/core/msg.d.ts"],
+      "resource": ["./dist/core/resource.d.ts"],
+      "sound": ["./dist/core/sound.d.ts"],
+      "entity": ["./dist/enhanced/entity.d.ts"],
+      "events": ["./dist/enhanced/events.d.ts"],
+      "player": ["./dist/enhanced/player.d.ts"],
+      "trace": ["./dist/enhanced/trace.d.ts"],
+      "cvar": ["./dist/native/cvar.d.ts"],
+      "file": ["./dist/native/file.d.ts"],
+      "util": ["./dist/utils/util.d.ts"]
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "postbuild": "node -e \"const fs = require('fs'); fs.cpSync('types', 'dist/types', {recursive: true}); const content = fs.readFileSync('dist/index.d.ts', 'utf8'); fs.writeFileSync('dist/index.d.ts', '/// <reference path=\\\"./types/index.d.ts\\\" />\\n' + content);\"",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "typedoc",
+    "docs:markdown": "typedoc --options typedoc.json",
+    "docs:html": "typedoc --options typedoc-html.json",
+    "docs:watch": "typedoc --watch",
+    "docs:clean": "rm -rf docs docs-html",
+    "docs:build": "npm run docs:clean && npm run docs:markdown && npm run docs:html",
+    "docs:serve": "npx serve docs-html",
+    "docs:all": "npm run docs:build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typedoc": "^0.28.11",
+    "typedoc-plugin-markdown": "^4.8.1",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "keywords": [
+    "nodemod",
+    "half-life",
+    "hlds",
+    "metamod",
+    "typescript",
+    "game-server",
+    "plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/nodemod-plugins.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/nodemod-plugins/issues"
+  },
+  "homepage": "https://github.com/your-org/nodemod-plugins#readme",
+  "author": "NodeMod Team",
+  "license": "MIT"
+}
