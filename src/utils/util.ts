@@ -1,10 +1,12 @@
-import { MsgDest, MsgTypes } from '../core/msg';
+import { MessageData, MsgDest, MsgTypes } from '../core/msg';
 import type NodemodMsg from '../core/msg';
 
 /**
  * Configuration options for HUD text display.
  */
 export interface HudTextOptions {
+  /** Message channel (-1 for default, 0-3 for custom channels) */
+  channel?: number;
   /** X coordinate on screen (default: 4000 - screen center) */
   x?: number;
   /** Y coordinate on screen (default: 4000 - screen center) */
@@ -12,11 +14,29 @@ export interface HudTextOptions {
   /** Visual effect type */
   effect?: number;
   /** Red color component (0-255) */
-  r?: number;
+  r1?: number;
   /** Green color component (0-255) */
-  g?: number;
+  g1?: number;
   /** Blue color component (0-255) */
-  b?: number;
+  b1?: number;
+  /** Alpha (transparency) component (0-255) */
+  a1?: number;
+  /** Secondary red color component (0-255) */
+  r2?: number;
+  /** Secondary green color component (0-255) */
+  g2?: number;
+  /** Secondary blue color component (0-255) */
+  b2?: number;
+  /** Secondary alpha component (0-255) */
+  a2?: number;
+  /** Fade-in time in milliseconds (default: 100) */
+  fadeinTime?: number;
+  /** Fade-out time in milliseconds (default: 100) */
+  fadeoutTime?: number;
+  /** Hold time in milliseconds (default: 800) */
+  holdTime?: number;
+  /** Effect duration time in milliseconds (for effect type 2) */
+  fxTime?: number;
 }
 
 /**
@@ -185,30 +205,36 @@ export default class NodemodUtil {
     }
 
     if (options) {
+      let data: MessageData[] = [
+        { type: 'byte', value: 29 },
+        { type: 'byte', value: options.channel || -1 }, // channel
+        { type: 'short', value: options.x || 0.0 },
+        { type: 'short', value: options.y || 0.0 },
+        { type: 'byte', value: options.effect || 0 },
+        { type: 'byte', value: options.r1 || 0 },
+        { type: 'byte', value: options.g1 || 0 },
+        { type: 'byte', value: options.b1 || 0 },
+        { type: 'byte', value: options.a1 || 0 }, // a
+        { type: 'byte', value: options.r2 || 255 },
+        { type: 'byte', value: options.g2 || 255 },
+        { type: 'byte', value: options.b2 || 255 },
+        { type: 'byte', value: options.a2 || 255 },
+        { type: 'short', value: options.fadeinTime || 100.0 }, // fadein
+        { type: 'short', value: options.fadeoutTime || 100.0 }, // fadeout
+        { type: 'short', value: options.holdTime || 800.0 }, // hold
+      ];
+
+      if (options.effect === 2) {
+        data.push({ type: 'short', value: options.fxTime }); // fxtime
+      }
+
+      data.push({ type: 'string', value: text });
+
       this.msg.send({
         type: MsgTypes.tempentity,
         dest: entity ? MsgDest.one_unreliable : MsgDest.broadcast,
         entity: entity || null,
-        data: [
-          { type: 'byte', value: 29 },
-          { type: 'byte', value: -1 }, // channel
-          { type: 'short', value: options.x || 4000 },
-          { type: 'short', value: options.y || 4000 },
-          { type: 'byte', value: options.effect || 0 },
-          { type: 'byte', value: options.r || 0 },
-          { type: 'byte', value: options.g || 0 },
-          { type: 'byte', value: options.b || 0 },
-          { type: 'byte', value: 0 }, // a
-          { type: 'byte', value: 255 },
-          { type: 'byte', value: 255 },
-          { type: 'byte', value: 250 },
-          { type: 'byte', value: 0 },
-          { type: 'short', value: 100 }, // fadein
-          { type: 'short', value: 100 }, // fadeout
-          { type: 'short', value: 800 }, // hold
-          // { type: 'short', value: 29 }, // fxtime
-          { type: 'string', value: text }
-        ]
+        data
       });
 
       return;

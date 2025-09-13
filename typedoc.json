@@ -17,7 +17,7 @@
     "notDocumented": false
   },
   "githubPages": false,
-  "outputFileStrategy": "modules",
+  "outputFileStrategy": "members",
   "fileExtension": ".md",
   "publicPath": "./docs/",
   "textContentMappings": {
@@ -26,10 +26,12 @@
     "header.docs": "Documentation"
   },
   "navigation": {
-    "includeCategories": true,
-    "includeGroups": true
+    "includeCategories": false,
+    "includeGroups": false
   },
-  "categorizeByGroup": true,
+  "categorizeByGroup": false,
+  "flattenOutputFiles": true,
+  "excludeCategories": ["engine", "enums", "events", "structures"],
   "sort": ["source-order"],
   "kindSortOrder": [
     "Document",
