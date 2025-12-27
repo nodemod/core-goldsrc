@@ -313,7 +313,7 @@ export default class NodemodMenu {
 
   /**
    * Handles menu selection commands from clients.
-   * 
+   *
    * @param client - The client entity that sent the command
    * @param text - The command text containing menu selection
    */
@@ -326,7 +326,7 @@ export default class NodemodMenu {
     const selection = parseInt(args[1]);
     const clientIndex = nodemod.eng.indexOfEdict(client);
     const state = this.menuStates[clientIndex] || this.menuStates['all'];
-    
+
     if (!state) {
       return;
     }
@@ -416,12 +416,14 @@ export default class NodemodMenu {
     if (state.timeoutId) {
       clearTimeout(state.timeoutId);
     }
-    
+
     const clientIndex = nodemod.eng.indexOfEdict(client);
-    if (state.isAll) {
-      delete this.menuStates['all'];
-    } else {
-      delete this.menuStates[clientIndex];
+    const stateKey = state.isAll ? 'all' : clientIndex;
+
+    // Only delete if the current state is still the same object
+    // This prevents deleting a new menu's state when a handler showed a new menu
+    if (this.menuStates[stateKey] === state) {
+      delete this.menuStates[stateKey];
     }
   }
 
@@ -465,7 +467,8 @@ export default class NodemodMenu {
         used: []
       };
 
-      this.menuStates[menu.entity ? clientIndex : 'all'] = state;
+      const stateKey = menu.entity ? clientIndex : 'all';
+      this.menuStates[stateKey] = state;
       this.showMenuInternal(menu, client, state, 0);
     });
   }
