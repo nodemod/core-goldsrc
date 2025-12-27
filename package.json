@@ -1,6 +1,6 @@
 {
   "name": "@nodemod/core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "TypeScript-first NodeMod core library for Half-Life server plugins",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -148,21 +148,6 @@
   "license": "MIT",
   "directories": {
     "doc": "docs"
-  },
-  "dependencies": {
-    "argparse": "^2.0.1",
-    "balanced-match": "^1.0.2",
-    "brace-expansion": "^2.0.2",
-    "entities": "^4.5.0",
-    "linkify-it": "^5.0.0",
-    "lunr": "^2.3.9",
-    "markdown-it": "^14.1.0",
-    "mdurl": "^2.0.0",
-    "minimatch": "^9.0.5",
-    "punycode.js": "^2.3.1",
-    "uc.micro": "^2.1.0",
-    "undici-types": "^6.21.0",
-    "yaml": "^2.8.1"
   },
   "publishConfig": {
     "access": "public"
