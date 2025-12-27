@@ -105,11 +105,8 @@ export default class NodemodCVar {
   }
   
   // Create console variable wrapper with utility methods
-  wrap(name: string): CVarWrapper | null {
-    if (!this.exists(name)) {
-      return null;
-    }
-    
+  // Always returns a wrapper - getters do live lookups so cvar doesn't need to exist at wrap time
+  wrap(name: string): CVarWrapper {
     const self = this;
     return {
       name,
@@ -176,16 +173,16 @@ export default class NodemodCVar {
   }
   
   // Predefined common CVars with utility methods
-  get mp_friendlyfire(): CVarWrapper | null { return this.wrap('mp_friendlyfire'); }
-  get mp_timelimit(): CVarWrapper | null { return this.wrap('mp_timelimit'); }
-  get mp_fraglimit(): CVarWrapper | null { return this.wrap('mp_fraglimit'); }
-  get hostname(): CVarWrapper | null { return this.wrap('hostname'); }
-  get maxplayers(): CVarWrapper | null { return this.wrap('maxplayers'); }
-  get sv_gravity(): CVarWrapper | null { return this.wrap('sv_gravity'); }
-  get sv_cheats(): CVarWrapper | null { return this.wrap('sv_cheats'); }
-  get pausable(): CVarWrapper | null { return this.wrap('pausable'); }
-  get sv_lan(): CVarWrapper | null { return this.wrap('sv_lan'); }
-  get sv_region(): CVarWrapper | null { return this.wrap('sv_region'); }
+  get mp_friendlyfire(): CVarWrapper { return this.wrap('mp_friendlyfire'); }
+  get mp_timelimit(): CVarWrapper { return this.wrap('mp_timelimit'); }
+  get mp_fraglimit(): CVarWrapper { return this.wrap('mp_fraglimit'); }
+  get hostname(): CVarWrapper { return this.wrap('hostname'); }
+  get maxplayers(): CVarWrapper { return this.wrap('maxplayers'); }
+  get sv_gravity(): CVarWrapper { return this.wrap('sv_gravity'); }
+  get sv_cheats(): CVarWrapper { return this.wrap('sv_cheats'); }
+  get pausable(): CVarWrapper { return this.wrap('pausable'); }
+  get sv_lan(): CVarWrapper { return this.wrap('sv_lan'); }
+  get sv_region(): CVarWrapper { return this.wrap('sv_region'); }
   
   // Create common server CVars
   initializeServerCVars(): void {

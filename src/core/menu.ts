@@ -381,7 +381,29 @@ export default class NodemodMenu {
   }
 
   private handleItemSelection(client: nodemod.Entity, state: MenuState, selection: number): void {
-    const itemIndex = (state.currentPage * this.ITEMS_PER_PAGE) + (selection - 1);
+    // Find the actual item index, accounting for separators that don't consume selection numbers
+    const startIndex = state.currentPage * this.ITEMS_PER_PAGE;
+    const endIndex = Math.min(startIndex + this.ITEMS_PER_PAGE, state.menu.items.length);
+    let selectionCount = 0;
+    let itemIndex = -1;
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const item = state.menu.items[i];
+      // Skip separators (empty/whitespace-only names)
+      if (!item.name || item.name.trim() === '') {
+        continue;
+      }
+      selectionCount++;
+      if (selectionCount === selection) {
+        itemIndex = i;
+        break;
+      }
+    }
+
+    if (itemIndex === -1) {
+      return;
+    }
+
     const item = state.menu.items[itemIndex];
 
     if (!item || item.disabled) {
@@ -525,16 +547,22 @@ export default class NodemodMenu {
     let keyMask = 0;
 
     // Add menu items
+    // Track display number separately so separators don't consume a slot
+    let displayNumber = 0;
     pageItems.forEach((item, index) => {
-      const actualIndex = startIndex + index;
-      const displayNumber = index + 1; // Always 1-7 for display
-      
+      // Treat empty/whitespace-only name as a separator (blank line)
+      if (!item.name || item.name.trim() === '') {
+        menuText += '\n';
+        return;
+      }
+
+      displayNumber++;
       if (!item.disabled && (item.handler || item.submenu)) {
         keyMask |= (1 << (displayNumber - 1));
       }
 
-      // Pass display number (1-7) instead of actual index for formatting
-      menuText += '\n' + menu.formatters.item(item, index, item.disabled || false);
+      // Pass displayNumber-1 for formatting (0-based index for formatter)
+      menuText += '\n' + menu.formatters.item(item, displayNumber - 1, item.disabled || false);
     });
 
     // Add navigation options
