@@ -215,7 +215,7 @@ declare namespace nodemod {
     /** void	(*pfnSetKeyValue)( char *infobuffer, const char *key, const char *value ); */
     setKeyValue(infobuffer: string, key: string, value: string): void;
     /** void	(*pfnSetClientKeyValue)( int clientIndex, char *infobuffer, const char *key, const char *value ); */
-    setClientKeyValue(clientIndex: number, infobuffer: string, key: string, value: string): void;
+    setClientKeyValue(clientIndex: number, entity: Entity, key: string, value: string): void;
     /** int	(*pfnIsMapValid)( const char *filename ); */
     isMapValid(filename: string): number;
     /** void	(*pfnStaticDecal)( const float *origin, int decalIndex, int entityIndex, int modelIndex ); */

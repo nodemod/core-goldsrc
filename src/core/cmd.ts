@@ -1,7 +1,19 @@
 /**
- * Context object containing information about a command execution.
+ * Context object containing information about a command execution (client or console).
  */
 export interface CommandContext {
+  /** The raw command text as entered by the client */
+  text: string;
+  /** Array of parsed command arguments, including the command name as the first element */
+  args: string[];
+  /** The client entity that issued the command (null for console commands) */
+  client: nodemod.Entity | null;
+}
+
+/**
+ * Context object containing information about a client command execution.
+ */
+export interface ClientCommandContext {
   /** The raw command text as entered by the client */
   text: string;
   /** Array of parsed command arguments, including the command name as the first element */
@@ -11,17 +23,34 @@ export interface CommandContext {
 }
 
 /**
- * Handler function for client commands.
+ * Context object containing information about a server command execution.
+ */
+export interface ServerCommandContext {
+  /** The raw command text as entered */
+  text: string;
+  /** Array of parsed command arguments, including the command name as the first element */
+  args: string[];
+}
+
+/**
+ * Handler function for console commands (client or server).
  */
 export interface CommandHandler {
   (ctx: CommandContext): void;
 }
 
 /**
+ * Handler function for client commands.
+ */
+export interface ClientCommandHandler {
+  (ctx: ClientCommandContext): void;
+}
+
+/**
  * Handler function for server commands.
  */
 export interface ServerCommandHandler {
-  (): void;
+  (ctx: ServerCommandContext): void;
 }
 
 /**
@@ -30,10 +59,10 @@ export interface ServerCommandHandler {
 export interface CommandOptions {
   /** The command name (without prefix) */
   name: string;
-  /** Whether this is a client or server command */
-  type: 'client' | 'server';
+  /** Whether this is a client, server, or console command */
+  type: 'console' | 'client' | 'server';
   /** The handler function to execute when the command is invoked */
-  handler: CommandHandler | ServerCommandHandler;
+  handler: CommandHandler | ClientCommandHandler | ServerCommandHandler;
 }
 
 // Extend the nodemod namespace to include missing methods
@@ -116,15 +145,21 @@ export default class NodemodCmd {
     nodemod.on('dllClientCommand', (client: nodemod.Entity, rtext: string) => {
       const args = this.parseCommand(rtext);
       const commandName = args[0];
-      const ctx: CommandContext = { text: rtext, args, client };
 
-      const command = this.getCommand(commandName, 'client');
+      const command = this.getCommand(commandName, 'client') || this.getCommand(commandName, 'console');
       if (!command) {
         return;
       }
 
       nodemod.setMetaResult(nodemod.META_RES.SUPERCEDE); // Supercede the command
-      return command.handler(ctx);
+
+      if (command.type === 'client') {
+        const ctx: ClientCommandContext = { text: rtext, args, client };
+        return (command.handler as ClientCommandHandler)(ctx);
+      } else {
+        const ctx: CommandContext = { text: rtext, args, client };
+        return (command.handler as CommandHandler)(ctx);
+      }
     });
   }
 
@@ -169,48 +204,114 @@ export default class NodemodCmd {
   add(options: CommandOptions): void {
     this.commands.push(options);
     
-    // Register server commands with the engine
-    if (options.type === 'server') {
-      // Create a wrapper function that calls our handler
-      const serverHandler = () => {
-        (options.handler as ServerCommandHandler)();
-      };
-      
-      // Register with the native engine
-      nodemod.eng.addServerCommand(options.name, serverHandler as any);
+    // Register server and console commands with the engine
+    if (options.type === 'server' || options.type === 'console') {
+      // For console commands, we need to handle both client and server contexts
+      if (options.type === 'console') {
+        const consoleHandler = () => {
+          try {
+            const argCount = nodemod.eng.cmdArgc();
+            const args: string[] = [];
+            for (let i = 0; i < argCount; i++) {
+              args.push(nodemod.eng.cmdArgv(i));
+            }
+            const text = nodemod.eng.cmdArgs();
+            const ctx: CommandContext = { text, args, client: null };
+            (options.handler as CommandHandler)(ctx);
+          } catch (err) {
+            console.error(`Error in console command '${options.name}':`, err instanceof Error ? err.stack : err);
+          }
+        };
+        nodemod.eng.addServerCommand(options.name, consoleHandler as any);
+      } else {
+        // Register with the native engine - handler should already be wrapped if needed
+        nodemod.eng.addServerCommand(options.name, options.handler as any);
+      }
     }
   }
 
   /**
-   * Convenience method to register a client command with a simplified handler signature.
-   * The handler receives the client entity and arguments (excluding the command name).
-   * 
+   * Convenience method to register a console command that works from both client and server.
+   * Similar to AMXX console commands - can be executed by clients or from server console.
+   * The handler receives the client (null if from console) and arguments.
+   *
    * @param name - The command name
-   * @param handler - Function that receives the client and arguments
-   * 
+   * @param handler - Function that receives the client entity (or null) and arguments
+   *
    * @example
    * ```typescript
-   * nodemodCore.cmd.register('kick', (client, args) => {
+   * nodemodCore.cmd.register('status', (client, args) => {
+   *   if (client) {
+   *     console.log(`Client ${client.name} requested status`);
+   *   } else {
+   *     console.log('Server console requested status');
+   *   }
+   * });
+   * ```
+   */
+  register(name: string, handler: (client: nodemod.Entity | null, args: string[]) => void): void {
+    this.add({
+      name,
+      type: 'console',
+      handler: (ctx: CommandContext) => handler(ctx.client, ctx.args.slice(1))
+    });
+  }
+
+  /**
+   * Convenience method to register a client-only command with a simplified handler signature.
+   * The handler receives the client entity and arguments (excluding the command name).
+   *
+   * @param name - The command name
+   * @param handler - Function that receives the client and arguments
+   *
+   * @example
+   * ```typescript
+   * nodemodCore.cmd.registerClient('kick', (client, args) => {
    *   const targetName = args[0];
    *   const reason = args.slice(1).join(' ');
    *   console.log(`${client.name} wants to kick ${targetName}: ${reason}`);
    * });
    * ```
    */
-  register(name: string, handler: (client: nodemod.Entity, args: string[]) => void): void {
+  registerClient(name: string, handler: (client: nodemod.Entity, args: string[]) => void): void {
     this.add({
       name,
       type: 'client',
-      handler: (ctx: CommandContext) => handler(ctx.client, ctx.args.slice(1))
+      handler: (ctx: ClientCommandContext) => handler(ctx.client, ctx.args.slice(1))
     });
   }
 
   /**
+   * Convenience method to register a server command with a simplified handler signature.
+   * The handler receives the arguments (excluding the command name) but no client entity.
+   *
+   * @param name - The command name
+   * @param handler - Function that receives the command arguments
+   *
+   * @example
+   * ```typescript
+   * nodemodCore.cmd.registerServer('ban', (args) => {
+   *   const playerId = args[0];
+   *   const duration = args[1] || '0';
+   *   console.log(`Banning player ${playerId} for ${duration} minutes`);
+   * });
+   * ```
+   */
+  registerServer(name: string, handler: (args: string[]) => void): void {
+    this.add({
+      name,
+      type: 'server',
+      handler: (ctx: ServerCommandContext) => handler(ctx.args.slice(1))
+    });
+  }
+
+
+  /**
    * Executes a server command through the native engine.
    * Automatically appends a newline character to the command.
-   * 
+   *
    * @param command - The server command to execute
-   * 
+   *
    * @example
    * ```typescript
    * nodemodCore.cmd.run('changelevel de_dust2');

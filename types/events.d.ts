@@ -1206,11 +1206,11 @@ declare namespace nodemod {
     /**
      * Event handler for engSetClientKeyValue
      * @param clientIndex int - number
-     * @param infobuffer char * - string
+     * @param entity edict_t * - Entity
      * @param key const char * - string
      * @param value const char * - string
      */
-    "engSetClientKeyValue": (clientIndex: number, infobuffer: string, key: string, value: string) => void;
+    "engSetClientKeyValue": (clientIndex: number, entity: Entity, key: string, value: string) => void;
     /**
      * Event handler for engIsMapValid
      * @param filename const char * - string
@@ -2127,11 +2127,11 @@ declare namespace nodemod {
     /**
      * Event handler for postEngSetClientKeyValue
      * @param clientIndex int - number
-     * @param infobuffer char * - string
+     * @param entity edict_t * - Entity
      * @param key const char * - string
      * @param value const char * - string
      */
-    "postEngSetClientKeyValue": (clientIndex: number, infobuffer: string, key: string, value: string) => void;
+    "postEngSetClientKeyValue": (clientIndex: number, entity: Entity, key: string, value: string) => void;
     /**
      * Event handler for postEngIsMapValid
      * @param filename const char * - string

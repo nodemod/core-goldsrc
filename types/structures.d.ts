@@ -72,12 +72,6 @@ declare namespace nodemod {
     /** ACCESSOR_T(..., "modelindex", modelindex, GETN, SETINT) */
     modelindex: number;
 
-    /** ACCESSOR_T(..., "viewmodel", viewmodel, GETN, SETINT) */
-    viewmodel: number;
-
-    /** ACCESSOR_T(..., "weaponmodel", weaponmodel, GETN, SETINT) */
-    weaponmodel: number;
-
     /** ACCESSOR_T(..., "absmin", absmin, GETVEC3, SETVEC3) */
     absmin: number[];
 
@@ -335,6 +329,12 @@ declare namespace nodemod {
 
     /** templ->SetNativeDataProperty("model", ...) */
     model: string;
+
+    /** templ->SetNativeDataProperty("viewmodel", ...) */
+    viewmodel: string;
+
+    /** templ->SetNativeDataProperty("weaponmodel", ...) */
+    weaponmodel: unknown;
 
     /** templ->SetNativeDataProperty("controller", ...) */
     controller: number;

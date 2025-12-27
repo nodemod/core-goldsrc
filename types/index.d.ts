@@ -20,6 +20,7 @@ declare namespace nodemod {
   const players: Entity[];
   const mapname: string;
   const time: number;
+  const frametime: number;
 
   // Event system functions
   function on<T extends keyof EventCallbacks>(eventName: T, callback: EventCallbacks[T]): void;

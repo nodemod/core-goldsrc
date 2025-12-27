@@ -330,7 +330,7 @@ export default class NodemodMsg extends EventEmitter {
 
   private writeValue(value: any, type: MessageData['type']): void {
     if (!this.state || this.state.isMessageEnd) {
-      nodemod.setMetaResult(nodemod.META_RES.UNSET);
+      // Don't set meta result - let C++ default MRES_IGNORED stand 
       return;
     }
 
