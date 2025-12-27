@@ -207,21 +207,21 @@ export default class NodemodUtil {
     if (options) {
       let data: MessageData[] = [
         { type: 'byte', value: 29 },
-        { type: 'byte', value: options.channel || -1 }, // channel
-        { type: 'short', value: options.x || 0.0 },
-        { type: 'short', value: options.y || 0.0 },
-        { type: 'byte', value: options.effect || 0 },
-        { type: 'byte', value: options.r1 || 0 },
-        { type: 'byte', value: options.g1 || 0 },
-        { type: 'byte', value: options.b1 || 0 },
-        { type: 'byte', value: options.a1 || 0 }, // a
-        { type: 'byte', value: options.r2 || 255 },
-        { type: 'byte', value: options.g2 || 255 },
-        { type: 'byte', value: options.b2 || 255 },
-        { type: 'byte', value: options.a2 || 255 },
-        { type: 'short', value: options.fadeinTime || 100.0 }, // fadein
-        { type: 'short', value: options.fadeoutTime || 100.0 }, // fadeout
-        { type: 'short', value: options.holdTime || 800.0 }, // hold
+        { type: 'byte', value: options.channel ?? -1 }, // channel
+        { type: 'short', value: options.x ?? 0.0 },
+        { type: 'short', value: options.y ?? 0.0 },
+        { type: 'byte', value: options.effect ?? 0 },
+        { type: 'byte', value: options.r1 ?? 0 },
+        { type: 'byte', value: options.g1 ?? 0 },
+        { type: 'byte', value: options.b1 ?? 0 },
+        { type: 'byte', value: options.a1 ?? 0 }, // a
+        { type: 'byte', value: options.r2 ?? 255 },
+        { type: 'byte', value: options.g2 ?? 255 },
+        { type: 'byte', value: options.b2 ?? 255 },
+        { type: 'byte', value: options.a2 ?? 255 },
+        { type: 'short', value: options.fadeinTime ?? 100.0 }, // fadein
+        { type: 'short', value: options.fadeoutTime ?? 100.0 }, // fadeout
+        { type: 'short', value: options.holdTime ?? 800.0 }, // hold
       ];
 
       if (options.effect === 2) {

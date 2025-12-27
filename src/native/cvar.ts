@@ -28,7 +28,7 @@ export default class NodemodCVar {
       description,
       next: null
     };
-    
+
     nodemod.eng.cVarRegister(cvar);
     this.registeredCVars.set(name, cvar);
   }
@@ -89,8 +89,11 @@ export default class NodemodCVar {
   // Check if console variable exists
   exists(name: string): boolean {
     try {
-      const value = this.getString(name);
-      return value !== null && value !== undefined;
+      // Use getPointer which returns null/undefined for non-existent cvars
+      // getString returns "" for non-existent cvars which is indistinguishable from empty value
+      const ptr = nodemod.eng.cVarGetPointer(name);
+      const exists = ptr !== null && ptr !== undefined;
+      return exists;
     } catch {
       return false;
     }

@@ -224,8 +224,22 @@ export default class NodemodCmd {
         };
         nodemod.eng.addServerCommand(options.name, consoleHandler as any);
       } else {
-        // Register with the native engine - handler should already be wrapped if needed
-        nodemod.eng.addServerCommand(options.name, options.handler as any);
+        // Server command - needs wrapper to build context from engine args
+        const serverHandler = () => {
+          try {
+            const argCount = nodemod.eng.cmdArgc();
+            const args: string[] = [];
+            for (let i = 0; i < argCount; i++) {
+              args.push(nodemod.eng.cmdArgv(i));
+            }
+            const text = nodemod.eng.cmdArgs();
+            const ctx: ServerCommandContext = { text, args };
+            (options.handler as ServerCommandHandler)(ctx);
+          } catch (err) {
+            console.error(`Error in server command '${options.name}':`, err instanceof Error ? err.stack : err);
+          }
+        };
+        nodemod.eng.addServerCommand(options.name, serverHandler as any);
       }
     }
   }
