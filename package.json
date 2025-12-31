@@ -1,7 +1,7 @@
 {
   "name": "@nodemod/core",
   "version": "1.0.3",
-  "description": "TypeScript-first NodeMod core library for Half-Life server plugins",
+  "description": "TypeScript-first NodeMod core library for Half-Life server development",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

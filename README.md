@@ -1,10 +1,10 @@
 # NodeMod Core
 
-TypeScript-first NodeMod core library for Half-Life server plugins.
+TypeScript-first NodeMod core library for Half-Life server development.
 
 ## Overview
 
-NodeMod Core provides a comprehensive, type-safe API for developing Half-Life server plugins using TypeScript. It offers enhanced utilities, event handling, player management, and entity manipulation while maintaining full compatibility with the underlying NodeMod system.
+NodeMod Core provides a comprehensive, type-safe API for Half-Life server development using TypeScript. It offers enhanced utilities, event handling, player management, and entity manipulation while maintaining full compatibility with the underlying NodeMod system.
 
 ## Features
 
