@@ -17,6 +17,7 @@ declare class Entity {
 declare namespace nodemod {
   // Properties
   const cwd: string;
+  const gameDir: string;
   const players: Entity[];
   const mapname: string;
   const time: number;

@@ -187,9 +187,7 @@ export default class NodemodFile {
   
   // Get game directory
   getGameDir(): string {
-    const gameDir: string[] = [''];
-    nodemod.eng.getGameDir(gameDir[0]);
-    return gameDir[0];
+    return nodemod.gameDir;
   }
   
   // File path utilities
