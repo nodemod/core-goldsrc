@@ -36,5 +36,6 @@ declare namespace nodemod {
   function getUserMsgId(msgName: string): number;
   function getUserMsgName(msgId: number): string;
   function setMetaResult(result: META_RES): void;
+  function getMetaResult(): META_RES;
   function continueServer(): void;
 }

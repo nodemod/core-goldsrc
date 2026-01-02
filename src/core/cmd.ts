@@ -32,25 +32,31 @@ export interface ServerCommandContext {
   args: string[];
 }
 
+/** Return type for command handlers - can be sync or async */
+type CommandResult = nodemod.META_RES | void | Promise<nodemod.META_RES | void>;
+
 /**
  * Handler function for console commands (client or server).
+ * Can optionally return a META_RES value to set the result.
  */
 export interface CommandHandler {
-  (ctx: CommandContext): void;
+  (ctx: CommandContext): CommandResult;
 }
 
 /**
  * Handler function for client commands.
+ * Can optionally return a META_RES value to set the result.
  */
 export interface ClientCommandHandler {
-  (ctx: ClientCommandContext): void;
+  (ctx: ClientCommandContext): CommandResult;
 }
 
 /**
  * Handler function for server commands.
+ * Can optionally return a META_RES value to set the result.
  */
 export interface ServerCommandHandler {
-  (ctx: ServerCommandContext): void;
+  (ctx: ServerCommandContext): CommandResult;
 }
 
 /**
@@ -143,32 +149,73 @@ export default class NodemodCmd {
    */
   constructor() {
     nodemod.on('dllClientCommand', (client: nodemod.Entity, rtext: string) => {
-      const args = this.parseCommand(rtext);
-      const commandName = args[0];
-
-      const command = this.getCommand(commandName, 'client') || this.getCommand(commandName, 'console');
-      if (!command) {
+      // Check if a previous listener already blocked this command
+      if (nodemod.getMetaResult() === nodemod.META_RES.SUPERCEDE) {
         return;
       }
 
-      nodemod.setMetaResult(nodemod.META_RES.SUPERCEDE); // Supercede the command
+      const args = this.parseCommand(rtext);
+      const commandName = args[0];
 
-      if (command.type === 'client') {
-        const ctx: ClientCommandContext = { text: rtext, args, client };
-        return (command.handler as ClientCommandHandler)(ctx);
-      } else {
-        const ctx: CommandContext = { text: rtext, args, client };
-        return (command.handler as CommandHandler)(ctx);
+      // Get matching commands by type
+      const clientCommands = this.getCommands(commandName, 'client');
+      const consoleCommands = this.getCommands(commandName, 'console');
+      const commands = [...clientCommands, ...consoleCommands];
+
+      if (commands.length === 0) {
+        return;
+      }
+
+      // Execute all registered handlers, stopping if one sets SUPERCEDE
+      for (const command of commands) {
+        let result: CommandResult;
+
+        if (command.type === 'client') {
+          const ctx: ClientCommandContext = { text: rtext, args, client };
+          result = (command.handler as ClientCommandHandler)(ctx);
+        } else {
+          const ctx: CommandContext = { text: rtext, args, client };
+          result = (command.handler as CommandHandler)(ctx);
+        }
+
+        // If handler returned a sync META_RES value, set it (ignore Promises)
+        if (typeof result === 'number') {
+          nodemod.setMetaResult(result);
+        }
+
+        // Check if handler blocked the command - stop processing further handlers
+        const mres = nodemod.getMetaResult();
+        if (mres === nodemod.META_RES.SUPERCEDE) {
+          break;
+        }
+      }
+
+      // Auto-SUPERCEDE only for console commands (register/registerServer)
+      // Client-only commands (registerClient) let the plugin decide
+      if (clientCommands.length === 0 && nodemod.getMetaResult() === nodemod.META_RES.IGNORED) {
+        nodemod.setMetaResult(nodemod.META_RES.SUPERCEDE);
       }
     });
   }
 
   /**
-   * Retrieves a registered command by name and type.
-   * 
+   * Retrieves all registered commands by name and type.
+   *
+   * @param commandName - The name of the command to find
+   * @param type - The type of command ('client', 'server', or 'console')
+   * @returns Array of matching command options
+   */
+  getCommands(commandName: string, type: string): CommandOptions[] {
+    return this.commands.filter(v => v.name === commandName && v.type === type);
+  }
+
+  /**
+   * Retrieves a registered command by name and type (first match only).
+   *
    * @param commandName - The name of the command to find
    * @param type - The type of command ('client' or 'server')
    * @returns The command options if found, undefined otherwise
+   * @deprecated Use getCommands() for multiple handlers
    */
   getCommand(commandName: string, type: string): CommandOptions | undefined {
     return this.commands.find(v => v.name === commandName && v.type === type);
@@ -248,6 +295,7 @@ export default class NodemodCmd {
    * Convenience method to register a console command that works from both client and server.
    * Similar to AMXX console commands - can be executed by clients or from server console.
    * The handler receives the client (null if from console) and arguments.
+   * Can optionally return a META_RES value to set the result.
    *
    * @param name - The command name
    * @param handler - Function that receives the client entity (or null) and arguments
@@ -260,10 +308,11 @@ export default class NodemodCmd {
    *   } else {
    *     console.log('Server console requested status');
    *   }
+   *   return nodemod.META_RES.SUPERCEDE; // optional
    * });
    * ```
    */
-  register(name: string, handler: (client: nodemod.Entity | null, args: string[]) => void): void {
+  register(name: string, handler: (client: nodemod.Entity | null, args: string[]) => CommandResult): void {
     this.add({
       name,
       type: 'console',
@@ -274,20 +323,22 @@ export default class NodemodCmd {
   /**
    * Convenience method to register a client-only command with a simplified handler signature.
    * The handler receives the client entity and arguments (excluding the command name).
+   * Can optionally return a META_RES value to set the result.
    *
    * @param name - The command name
    * @param handler - Function that receives the client and arguments
    *
    * @example
    * ```typescript
-   * nodemodCore.cmd.registerClient('kick', (client, args) => {
-   *   const targetName = args[0];
-   *   const reason = args.slice(1).join(' ');
-   *   console.log(`${client.name} wants to kick ${targetName}: ${reason}`);
+   * nodemodCore.cmd.registerClient('say', (client, args) => {
+   *   const message = args.join(' ');
+   *   console.log(`${client.name} said: ${message}`);
+   *   // No return = IGNORED, chat passes through to engine
+   *   // return nodemod.META_RES.SUPERCEDE; // to block the chat
    * });
    * ```
    */
-  registerClient(name: string, handler: (client: nodemod.Entity, args: string[]) => void): void {
+  registerClient(name: string, handler: (client: nodemod.Entity, args: string[]) => CommandResult): void {
     this.add({
       name,
       type: 'client',
@@ -298,6 +349,7 @@ export default class NodemodCmd {
   /**
    * Convenience method to register a server command with a simplified handler signature.
    * The handler receives the arguments (excluding the command name) but no client entity.
+   * Can optionally return a META_RES value to set the result.
    *
    * @param name - The command name
    * @param handler - Function that receives the command arguments
@@ -311,7 +363,7 @@ export default class NodemodCmd {
    * });
    * ```
    */
-  registerServer(name: string, handler: (args: string[]) => void): void {
+  registerServer(name: string, handler: (args: string[]) => CommandResult): void {
     this.add({
       name,
       type: 'server',
