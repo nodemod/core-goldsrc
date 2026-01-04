@@ -337,10 +337,10 @@ declare namespace nodemod {
     weaponmodel: unknown;
 
     /** templ->SetNativeDataProperty("controller", ...) */
-    controller: number;
+    controller: number[];
 
     /** templ->SetNativeDataProperty("blending", ...) */
-    blending: number;
+    blending: number[];
 
     /** templ->SetNativeDataProperty("chain", ...) */
     chain: Entity | null;
@@ -674,13 +674,13 @@ declare namespace nodemod {
     vuser4: number[];
 
     /** templ->SetNativeDataProperty("rendercolor", ...) */
-    rendercolor: Entity | null;
+    rendercolor: number[];
 
     /** templ->SetNativeDataProperty("controller", ...) */
-    controller: Entity | null;
+    controller: number[];
 
     /** templ->SetNativeDataProperty("blending", ...) */
-    blending: Entity | null;
+    blending: number[];
   }
   /** Player input commands sent from client to server */
   interface UserCmd {
