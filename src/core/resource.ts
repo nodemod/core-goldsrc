@@ -43,17 +43,30 @@ export interface ResourceItem {
 export default class NodemodResource {
   /** Queue of precaching functions to execute on map spawn */
   private listToPrecache: PrecacheFunction[] = [];
+  /** Flag to ensure precache only runs once per map (on worldspawn) */
+  private precacheCalled: boolean = false;
 
   /**
    * Creates a new NodemodResource instance and sets up event handlers.
-   * Automatically processes the precache queue when the map spawns.
+   * Automatically processes the precache queue when the worldspawn entity spawns.
+   * This matches AMXX's plugin_precache behavior which fires during DispatchSpawn
+   * of the first entity (worldspawn).
    */
   constructor() {
+    // Process precache queue on first entity spawn (worldspawn)
     nodemod.on('dllSpawn', () => {
-      while (this.listToPrecache.length) {
-        const fn = this.listToPrecache.pop();
-        if (fn) fn();
+      if (!this.precacheCalled) {
+        this.precacheCalled = true;
+        while (this.listToPrecache.length) {
+          const fn = this.listToPrecache.pop();
+          if (fn) fn();
+        }
       }
+    });
+
+    // Reset precache flag when map ends so next map can precache
+    nodemod.on('dllServerDeactivate', () => {
+      this.precacheCalled = false;
     });
   }
 
