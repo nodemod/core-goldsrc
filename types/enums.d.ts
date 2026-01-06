@@ -1,7 +1,7 @@
 // This file is generated automatically. Don't edit it.
 declare namespace nodemod {
   // Metamod result constants
-  const enum META_RES {
+  const enum MRES {
     UNSET = 0,    // Uninitialized (causes error)
     IGNORED = 1,  // Plugin didn't take any action, continue normally
     HANDLED = 2,  // Plugin did something, but original function still executes
@@ -34,22 +34,9 @@ declare namespace nodemod {
     force_model_specifybounds_if_avail = 3
   }
 
-  // Message destination types for engine messaging
-  const enum MSG_DEST {
-    BROADCAST = 0,      // Message to all players without delivery guarantee
-    ONE = 1,           // Message to one player with delivery guarantee
-    ALL = 2,           // Message with delivery guarantee to all players
-    INIT = 3,          // Write to the init string
-    PVS = 4,           // All players in potentially visible set of point
-    PAS = 5,           // All players in potentially audible set
-    PVS_R = 6,         // All players in PVS with reliable delivery
-    PAS_R = 7,         // All players in PAS with reliable delivery
-    ONE_UNRELIABLE = 8, // Message to one player without delivery guarantee
-    SPEC = 9           // Message to all HLTV proxy
-  }
 
-  // Network message types for Half-Life protocol
-  const enum MSG_TYPE {
+  // Network message types for Half-Life protocol (SVC = Server to Client)
+  const enum SVC {
     BAD = 0,
     NOP = 1,
     DISCONNECT = 2,
@@ -111,13 +98,6 @@ declare namespace nodemod {
     SENDCVARVALUE2 = 58
   }
 
-  // Sound attenuation constants for pfnEmitSound
-  const enum ATTN {
-    NONE = 0,         // No attenuation
-    NORM = 0.8,       // Normal attenuation
-    IDLE = 2.0,       // Idle attenuation
-    STATIC = 1.25     // Static attenuation
-  }
 
   // Sound flags for pfnEmitSound fFlags parameter
   const enum SND {
@@ -142,66 +122,8 @@ declare namespace nodemod {
     NOEXTRAWHITEPACE = 512   // 1<<9 - Strip trailing/leading white space from this cvar
   }
 
-  /** pev(entity, pev_button) or pev(entity, pev_oldbuttons) values */
-  const enum IN_BUTTON {
-    ATTACK = 1,        // 1<<0
-    JUMP = 2,          // 1<<1
-    DUCK = 4,          // 1<<2
-    FORWARD = 8,       // 1<<3
-    BACK = 16,         // 1<<4
-    USE = 32,          // 1<<5
-    CANCEL = 64,       // 1<<6
-    LEFT = 128,        // 1<<7
-    RIGHT = 256,       // 1<<8
-    MOVELEFT = 512,    // 1<<9
-    MOVERIGHT = 1024,  // 1<<10
-    ATTACK2 = 2048,    // 1<<11
-    RUN = 4096,        // 1<<12
-    RELOAD = 8192,     // 1<<13
-    ALT1 = 16384,      // 1<<14
-    SCORE = 32768      // 1<<15 - Used by client.dll for when scoreboard is held down
-  }
 
-  /** pev(entity, pev_flags) values */
-  const enum FL {
-    FLY = 1,                    // 1<<0 - Changes the SV_Movestep() behavior to not need to be on ground
-    SWIM = 2,                   // 1<<1 - Changes the SV_Movestep() behavior to not need to be on ground (but stay in water)
-    CONVEYOR = 4,               // 1<<2
-    CLIENT = 8,                 // 1<<3
-    INWATER = 16,               // 1<<4
-    MONSTER = 32,               // 1<<5
-    GODMODE = 64,               // 1<<6
-    NOTARGET = 128,             // 1<<7
-    SKIPLOCALHOST = 256,        // 1<<8 - Don't send entity to local host, it's predicting this entity itself
-    ONGROUND = 512,             // 1<<9 - At rest / on the ground
-    PARTIALGROUND = 1024,       // 1<<10 - Not all corners are valid
-    WATERJUMP = 2048,           // 1<<11 - Player jumping out of water
-    FROZEN = 4096,              // 1<<12 - Player is frozen for 3rd person camera
-    FAKECLIENT = 8192,          // 1<<13 - JAC: fake client, simulated server side; don't send network messages to them
-    DUCKING = 16384,            // 1<<14 - Player flag -- Player is fully crouched
-    FLOAT = 32768,              // 1<<15 - Apply floating force to this entity when in water
-    GRAPHED = 65536,            // 1<<16 - Worldgraph has this ent listed as something that blocks a connection
-    IMMUNE_WATER = 131072,      // 1<<17
-    IMMUNE_SLIME = 262144,      // 1<<18
-    IMMUNE_LAVA = 524288,       // 1<<19
-    PROXY = 1048576,            // 1<<20 - This is a spectator proxy
-    ALWAYSTHINK = 2097152,      // 1<<21 - Brush model flag -- call think every frame regardless of nextthink - ltime
-    BASEVELOCITY = 4194304,     // 1<<22 - Base velocity has been applied this frame
-    MONSTERCLIP = 8388608,      // 1<<23 - Only collide in with monsters who have FL_MONSTERCLIP set
-    ONTRAIN = 16777216,         // 1<<24 - Player is _controlling_ a train
-    WORLDBRUSH = 33554432,      // 1<<25 - Not moveable/removeable brush entity
-    SPECTATOR = 67108864,       // 1<<26 - This client is a spectator
-    CUSTOMENTITY = 536870912,   // 1<<29 - This is a custom entity
-    KILLME = 1073741824,        // 1<<30 - This entity is marked for death
-    DORMANT = 2147483648        // 1<<31 - Entity is dormant, no updates to client
-  }
 
-  /** engfunc(EngFunc_WalkMove, entity, Float:yaw, Float:dist, iMode) iMode values */
-  const enum WALKMOVE {
-    NORMAL = 0,     // Normal walkmove
-    WORLDONLY = 1,  // Doesn't hit ANY entities, no matter what the solid type
-    CHECKONLY = 2   // Move, but don't touch triggers
-  }
 
   /** engfunc(EngFunc_MoveToOrigin, entity, Float:goal[3], Float:distance, moveType) moveType values */
   const enum MOVE {
@@ -209,58 +131,7 @@ declare namespace nodemod {
     STRAFE = 1   // moves in direction specified, no matter which way monster is facing
   }
 
-  /** pev(entity, pev_movetype) values */
-  const enum MOVETYPE {
-    NONE = 0,           // Never moves
-    WALK = 3,           // Player only - moving on the ground
-    STEP = 4,           // Gravity, special edge handling -- monsters use this
-    FLY = 5,            // No gravity, but still collides with stuff
-    TOSS = 6,           // Gravity/Collisions
-    PUSH = 7,           // No clip to world, push and crush
-    NOCLIP = 8,         // No gravity, no collisions, still do velocity/avelocity
-    FLYMISSILE = 9,     // Extra size to monsters
-    BOUNCE = 10,        // Just like Toss, but reflect velocity when contacting surfaces
-    BOUNCEMISSILE = 11, // Bounce w/o gravity
-    FOLLOW = 12,        // Track movement of aiment
-    PUSHSTEP = 13       // BSP model that needs physics/world collisions
-  }
 
-  /** pev(entity, pev_solid) values */
-  const enum SOLID {
-    NOT = 0,       // No interaction with other objects
-    TRIGGER = 1,   // Touch on edge, but not blocking
-    BBOX = 2,      // Touch on edge, block
-    SLIDEBOX = 3,  // Touch on edge, but not an onground
-    BSP = 4        // BSP clip, touch on edge, block
-  }
-
-  /** pev(entity, pev_deadflag) values */
-  const enum DEAD {
-    NO = 0,           // Alive
-    DYING = 1,        // Playing death animation or still falling off of a ledge waiting to hit ground
-    DEAD = 2,         // Dead, lying still
-    RESPAWNABLE = 3,
-    DISCARDBODY = 4
-  }
-
-  /** new Float:takedamage, pev(entity, pev_takedamage, takedamage) values */
-  const enum DAMAGE {
-    NO = 0.0,
-    YES = 1.0,
-    AIM = 2.0
-  }
-
-  /** pev(entity, pev_effects) values */
-  const enum EF {
-    BRIGHTFIELD = 1,   // Swirling cloud of particles
-    MUZZLEFLASH = 2,   // Single frame ELIGHT on entity attachment 0
-    BRIGHTLIGHT = 4,   // DLIGHT centered at entity origin
-    DIMLIGHT = 8,      // Player flashlight
-    INVLIGHT = 16,     // Get lighting from ceiling
-    NOINTERP = 32,     // Don't interpolate the next frame
-    LIGHT = 64,        // Rocket flare glow sprite
-    NODRAW = 128       // Don't draw entity
-  }
 
   /** Spectating camera mode constants (usually stored in pev_iuser1) */
   const enum OBS {
@@ -273,28 +144,6 @@ declare namespace nodemod {
     MAP_CHASE = 6      // Chase Overview
   }
 
-  /** engfunc(EngFunc_PointContents, Float:origin) return values */
-  const enum CONTENTS {
-    EMPTY = -1,
-    SOLID = -2,
-    WATER = -3,
-    SLIME = -4,
-    LAVA = -5,
-    SKY = -6,
-    ORIGIN = -7,        // Removed at csg time
-    CLIP = -8,          // Changed to contents_solid
-    CURRENT_0 = -9,
-    CURRENT_90 = -10,
-    CURRENT_180 = -11,
-    CURRENT_270 = -12,
-    CURRENT_UP = -13,
-    CURRENT_DOWN = -14,
-    TRANSLUCENT = -15,
-    LADDER = -16,
-    FLYFIELD = -17,
-    GRAVITY_FLYFIELD = -18,
-    FOG = -19
-  }
 
   /** Instant damage values for use with the 3rd parameter of the "Damage" client message */
   const enum DMG {
@@ -432,497 +281,336 @@ declare namespace nodemod {
     CLIENT = 64     // 1<<6 - Only issue event client side
   }
 
-  /** Ham (Hamsandwich) hook result values */
-  const enum HAM_RESULT {
-    UNSET = 0, // Default state
-    IGNORED = 1, // Hook had no effect, continue normally
-    HANDLED = 2, // Hook processed the call, but still call original
-    OVERRIDE = 3, // Use hook's return value instead of original
-    SUPERCEDE = 4, // Don't call original function at all
-  }
 
-  /** Ham function IDs for virtual function hooking */
-  const enum HAM_FUNC {
-    Spawn = 0,
-    Precache = 1,
-    Keyvalue = 2,
-    ObjectCaps = 3,
-    Activate = 4,
-    SetObjectCollisionBox = 5,
-    Classify = 6,
-    DeathNotice = 7,
-    TraceAttack = 8,
-    TakeDamage = 9,
-    TakeHealth = 10,
-    Killed = 11,
-    BloodColor = 12,
-    TraceBleed = 13,
-    IsTriggered = 14,
-    MyMonsterPointer = 15,
-    MySquadMonsterPointer = 16,
-    GetToggleState = 17,
-    AddPoints = 18,
-    AddPointsToTeam = 19,
-    AddPlayerItem = 20,
-    RemovePlayerItem = 21,
-    GiveAmmo = 22,
-    GetDelay = 23,
-    IsMoving = 24,
-    OverrideReset = 25,
-    DamageDecal = 26,
-    SetToggleState = 27,
-    StartSneaking = 28,
-    StopSneaking = 29,
-    OnControls = 30,
-    IsSneaking = 31,
-    IsAlive = 32,
-    IsBSPModel = 33,
-    ReflectGauss = 34,
-    HasTarget = 35,
-    IsInWorld = 36,
-    IsPlayer = 37,
-    IsNetClient = 38,
-    TeamId = 39,
-    GetNextTarget = 40,
-    Think = 41,
-    Touch = 42,
-    Use = 43,
-    Blocked = 44,
-    Respawn = 45,
-    UpdateOwner = 46,
-    FBecomeProne = 47,
-    Center = 48,
-    EyePosition = 49,
-    EarPosition = 50,
-    BodyTarget = 51,
-    Illumination = 52,
-    FVisible = 53,
-    FVecVisible = 54,
-    Player_Jump = 55,
-    Player_Duck = 56,
-    Player_PreThink = 57,
-    Player_PostThink = 58,
-    Player_GetGunPosition = 59,
-    Player_ShouldFadeOnDeath = 60,
-    Player_ImpulseCommands = 61,
-    Player_UpdateClientData = 62,
-    Item_AddToPlayer = 63,
-    Item_AddDuplicate = 64,
-    Item_CanDeploy = 65,
-    Item_Deploy = 66,
-    Item_CanHolster = 67,
-    Item_Holster = 68,
-    Item_UpdateItemInfo = 69,
-    Item_PreFrame = 70,
-    Item_PostFrame = 71,
-    Item_Drop = 72,
-    Item_Kill = 73,
-    Item_AttachToPlayer = 74,
-    Item_PrimaryAmmoIndex = 75,
-    Item_SecondaryAmmoIndex = 76,
-    Item_UpdateClientData = 77,
-    Item_GetWeaponPtr = 78,
-    Item_ItemSlot = 79,
-    Weapon_ExtractAmmo = 80,
-    Weapon_ExtractClipAmmo = 81,
-    Weapon_AddWeapon = 82,
-    Weapon_PlayEmptySound = 83,
-    Weapon_ResetEmptySound = 84,
-    Weapon_SendWeaponAnim = 85,
-    Weapon_IsUsable = 86,
-    Weapon_PrimaryAttack = 87,
-    Weapon_SecondaryAttack = 88,
-    Weapon_Reload = 89,
-    Weapon_WeaponIdle = 90,
-    Weapon_RetireWeapon = 91,
-    Weapon_ShouldWeaponIdle = 92,
-    Weapon_UseDecrement = 93,
-    TS_BreakableRespawn = 94,
-    TS_CanUsedThroughWalls = 95,
-    TS_RespawnWait = 96,
-    CS_Restart = 97,
-    CS_RoundRespawn = 98,
-    CS_Item_CanDrop = 99,
-    CS_Item_GetMaxSpeed = 100,
-    DOD_RoundRespawn = 101,
-    DOD_RoundRespawnEnt = 102,
-    DOD_RoundStore = 103,
-    DOD_AreaSetIndex = 104,
-    DOD_AreaSendStatus = 105,
-    DOD_GetState = 106,
-    DOD_GetStateEnt = 107,
-    DOD_Item_CanDrop = 108,
-    TFC_EngineerUse = 109,
-    TFC_Finished = 110,
-    TFC_EmpExplode = 111,
-    TFC_CalcEmpDmgRad = 112,
-    TFC_TakeEmpBlast = 113,
-    TFC_EmpRemove = 114,
-    TFC_TakeConcussionBlast = 115,
-    TFC_Concuss = 116,
-    ESF_IsEnvModel = 117,
-    ESF_TakeDamage2 = 118,
-    NS_GetPointValue = 119,
-    NS_AwardKill = 120,
-    NS_ResetEntity = 121,
-    NS_UpdateOnRemove = 122,
-    TS_GiveSlowMul = 123,
-    TS_GoSlow = 124,
-    TS_InSlow = 125,
-    TS_IsObjective = 126,
-    TS_EnableObjective = 127,
-    TS_OnFreeEntPrivateData = 128,
-    TS_ShouldCollide = 129,
-    ChangeYaw = 130,
-    HasHumanGibs = 131,
-    HasAlienGibs = 132,
-    FadeMonster = 133,
-    GibMonster = 134,
-    BecomeDead = 135,
-    IRelationship = 136,
-    PainSound = 137,
-    ReportAIState = 138,
-    MonsterInitDead = 139,
-    Look = 140,
-    BestVisibleEnemy = 141,
-    FInViewCone = 142,
-    FVecInViewCone = 143,
-    GetDeathActivity = 144,
-    RunAI = 145,
-    MonsterThink = 146,
-    MonsterInit = 147,
-    CheckLocalMove = 148,
-    Move = 149,
-    MoveExecute = 150,
-    ShouldAdvanceRoute = 151,
-    GetStoppedActivity = 152,
-    Stop = 153,
-    CheckRangeAttack1 = 154,
-    CheckRangeAttack2 = 155,
-    CheckMeleeAttack1 = 156,
-    CheckMeleeAttack2 = 157,
-    ScheduleChange = 158,
-    CanPlaySequence = 159,
-    CanPlaySentence2 = 160,
-    PlaySentence = 161,
-    PlayScriptedSentence = 162,
-    SentenceStop = 163,
-    GetIdealState = 164,
-    SetActivity = 165,
-    CheckEnemy = 166,
-    FTriangulate = 167,
-    SetYawSpeed = 168,
-    BuildNearestRoute = 169,
-    FindCover = 170,
-    CoverRadius = 171,
-    FCanCheckAttacks = 172,
-    CheckAmmo = 173,
-    IgnoreConditions = 174,
-    FValidateHintType = 175,
-    FCanActiveIdle = 176,
-    ISoundMask = 177,
-    HearingSensitivity = 178,
-    BarnacleVictimBitten = 179,
-    BarnacleVictimReleased = 180,
-    PrescheduleThink = 181,
-    DeathSound = 182,
-    AlertSound = 183,
-    IdleSound = 184,
-    StopFollowing = 185,
-    CS_Weapon_SendWeaponAnim = 186,
-    CS_Player_ResetMaxSpeed = 187,
-    CS_Player_IsBot = 188,
-    CS_Player_GetAutoaimVector = 189,
-    CS_Player_Blind = 190,
-    CS_Player_OnTouchingWeapon = 191,
-    DOD_SetScriptReset = 192,
-    DOD_Item_SpawnDeploy = 193,
-    DOD_Item_SetDmgTime = 194,
-    DOD_Item_DropGren = 195,
-    DOD_Weapon_IsUseable = 196,
-    DOD_Weapon_Aim = 197,
-    DOD_Weapon_flAim = 198,
-    DOD_Weapon_RemoveStamina = 199,
-    DOD_Weapon_ChangeFOV = 200,
-    DOD_Weapon_ZoomOut = 201,
-    DOD_Weapon_ZoomIn = 202,
-    DOD_Weapon_GetFOV = 203,
-    DOD_Weapon_IsWaterSniping = 204,
-    DOD_Weapon_UpdateZoomSpeed = 205,
-    DOD_Weapon_Special = 206,
-    TFC_DB_GetItemName = 207,
-    TFC_RadiusDamage = 208,
-    TFC_RadiusDamage2 = 209,
-    ESF_IsFighter = 210,
-    ESF_IsBuddy = 211,
-    ESF_EmitSound = 212,
-    ESF_EmitNullSound = 213,
-    ESF_IncreaseStrength = 214,
-    ESF_IncreasePL = 215,
-    ESF_SetPowerLevel = 216,
-    ESF_SetMaxPowerLevel = 217,
-    ESF_StopAniTrigger = 218,
-    ESF_StopFly = 219,
-    ESF_HideWeapon = 220,
-    ESF_ClientRemoveWeapon = 221,
-    ESF_SendClientsCustomModel = 222,
-    ESF_CanTurbo = 223,
-    ESF_CanPrimaryFire = 224,
-    ESF_CanSecondaryFire = 225,
-    ESF_CanStopFly = 226,
-    ESF_CanBlock = 227,
-    ESF_CanRaiseKi = 228,
-    ESF_CanRaiseStamina = 229,
-    ESF_CanTeleport = 230,
-    ESF_CanStartFly = 231,
-    ESF_CanStartPowerup = 232,
-    ESF_CanJump = 233,
-    ESF_CanWallJump = 234,
-    ESF_IsSuperJump = 235,
-    ESF_IsMoveBack = 236,
-    ESF_CheckWallJump = 237,
-    ESF_EnableWallJump = 238,
-    ESF_DisableWallJump = 239,
-    ESF_ResetWallJumpVars = 240,
-    ESF_GetWallJumpAnim = 241,
-    ESF_GetWallJumpAnim2 = 242,
-    ESF_SetWallJumpAnimation = 243,
-    ESF_SetFlyMoveType = 244,
-    ESF_IsFlyMoveType = 245,
-    ESF_IsWalkMoveType = 246,
-    ESF_SetWalkMoveType = 247,
-    ESF_DrawChargeBar = 248,
-    ESF_StartBlock = 249,
-    ESF_StopBlock = 250,
-    ESF_StartFly = 251,
-    ESF_GetMaxSpeed = 252,
-    ESF_SetAnimation = 253,
-    ESF_PlayAnimation = 254,
-    ESF_GetMoveForward = 255,
-    ESF_GetMoveRight = 256,
-    ESF_GetMoveUp = 257,
-    ESF_AddBlindFX = 258,
-    ESF_RemoveBlindFX = 259,
-    ESF_DisablePSBar = 260,
-    ESF_AddBeamBoxCrosshair = 261,
-    ESF_RemoveBeamBoxCrosshair = 262,
-    ESF_DrawPSWinBonus = 263,
-    ESF_DrawPSBar = 264,
-    ESF_LockCrosshair = 265,
-    ESF_UnLockCrosshair = 266,
-    ESF_RotateCrosshair = 267,
-    ESF_UnRotateCrosshair = 268,
-    ESF_WaterMove = 269,
-    ESF_CheckTimeBasedDamage = 270,
-    ESF_DoesSecondaryAttack = 271,
-    ESF_DoesPrimaryAttack = 272,
-    ESF_RemoveSpecialModes = 273,
-    ESF_StopTurbo = 274,
-    ESF_TakeBean = 275,
-    ESF_GetPowerLevel = 276,
-    ESF_RemoveAllOtherWeapons = 277,
-    ESF_StopSwoop = 278,
-    ESF_SetDeathAnimation = 279,
-    ESF_SetModel = 280,
-    ESF_AddAttacks = 281,
-    ESF_EmitClassSound = 282,
-    ESF_CheckLightning = 283,
-    ESF_FreezeControls = 284,
-    ESF_UnFreezeControls = 285,
-    ESF_UpdateKi = 286,
-    ESF_UpdateHealth = 287,
-    ESF_GetTeleportDir = 288,
-    ESF_Weapon_HolsterWhenMeleed = 289,
-    NS_SetBoneController = 290,
-    NS_SaveDataForReset = 291,
-    NS_GetHull = 292,
-    NS_GetMaxWalkSpeed = 293,
-    NS_SetTeamID = 294,
-    NS_GetEffectivePlayerClass = 295,
-    NS_GetAuthenticationMask = 296,
-    NS_EffectivePlayerClassChanged = 297,
-    NS_NeedsTeamUpdate = 298,
-    NS_SendTeamUpdate = 299,
-    NS_SendWeaponUpdate = 300,
-    NS_InitPlayerFromSpawn = 301,
-    NS_PackDeadPlayerItems = 302,
-    NS_GetAnimationForActivity = 303,
-    NS_StartObserver = 304,
-    NS_StopObserver = 305,
-    NS_GetAdrenalineFactor = 306,
-    NS_GetNamedItem = 307,
-    NS_Suicide = 308,
-    NS_GetCanUseWeapon = 309,
-    NS_Weapon_GetWeapPrimeTime = 310,
-    NS_Weapon_PrimeWeapon = 311,
-    NS_Weapon_GetIsWeaponPrimed = 312,
-    NS_Weapon_GetIsWeaponPriming = 313,
-    NS_Weapon_DefaultDeploy = 314,
-    NS_Weapon_DefaultReload = 315,
-    NS_Weapon_GetDeployTime = 316,
-    SC_GetClassification = 317,
-    SC_IsMonster = 318,
-    SC_IsPhysX = 319,
-    SC_IsPointEntity = 320,
-    SC_IsMachine = 321,
-    SC_CriticalRemove = 322,
-    SC_UpdateOnRemove = 323,
-    SC_FVisible = 324,
-    SC_FVisibleFromPos = 325,
-    SC_IsFacings = 326,
-    SC_GetPointsForDamage = 327,
-    SC_GetDamagePoints = 328,
-    SC_OnCreate = 329,
-    SC_OnDestroy = 330,
-    SC_IsValidEntity = 331,
-    SC_ShouldFadeOnDeath = 332,
-    SC_SetupFriendly = 333,
-    SC_ReviveThink = 334,
-    SC_Revive = 335,
-    SC_StartMonster = 336,
-    SC_CheckRangeAttack1_Move = 337,
-    SC_CheckRangeAttack2_Move = 338,
-    SC_CheckMeleeAttack1_Move = 339,
-    SC_CheckMeleeAttack2_Move = 340,
-    SC_CheckTankUsage = 341,
-    SC_SetGaitActivity = 342,
-    SC_FTriangulate = 343,
-    SC_FTriangulateExtension = 344,
-    SC_FindCoverGrenade = 345,
-    SC_FindCoverDistance = 346,
-    SC_FindAttackPoint = 347,
-    SC_FValidateCover = 348,
-    SC_NoFriendlyFire1 = 349,
-    SC_NoFriendlyFire2 = 350,
-    SC_NoFriendlyFire3 = 351,
-    SC_NoFriendlyFireToPos = 352,
-    SC_FVisibleGunPos = 353,
-    SC_FInBulletCone = 354,
-    SC_CallGibMonster = 355,
-    SC_CheckTimeBasedDamage = 356,
-    SC_IsMoving = 357,
-    SC_IsPlayerFollowing = 358,
-    SC_StartPlayerFollowing = 359,
-    SC_StopPlayerFollowing = 360,
-    SC_UseSound = 361,
-    SC_UnUseSound = 362,
-    SC_RideMonster = 363,
-    SC_CheckApplyGenericAttacks = 364,
-    SC_CheckScared = 365,
-    SC_CheckCreatureDanger = 366,
-    SC_CheckFallDamage = 367,
-    SC_CheckRevival = 368,
-    SC_MedicCallSound = 369,
-    SC_Player_MenuInputPerformed = 370,
-    SC_Player_IsMenuInputDone = 371,
-    SC_Player_SpecialSpawn = 372,
-    SC_Player_IsValidInfoEntity = 373,
-    SC_Player_LevelEnd = 374,
-    SC_Player_VoteStarted = 375,
-    SC_Player_CanStartNextVote = 376,
-    SC_Player_Vote = 377,
-    SC_Player_HasVoted = 378,
-    SC_Player_ResetVote = 379,
-    SC_Player_LastVoteInput = 380,
-    SC_Player_InitVote = 381,
-    SC_Player_TimeToStartNextVote = 382,
-    SC_Player_ResetView = 383,
-    SC_Player_GetLogFrequency = 384,
-    SC_Player_LogPlayerStats = 385,
-    SC_Player_DisableCollisionWithPlayer = 386,
-    SC_Player_EnableCollisionWithPlayer = 387,
-    SC_Player_CanTouchPlayer = 388,
-    SC_Item_Materialize = 389,
-    SC_Weapon_BulletAccuracy = 390,
-    SC_Weapon_TertiaryAttack = 391,
-    SC_Weapon_BurstSupplement = 392,
-    SC_Weapon_GetP_Model = 393,
-    SC_Weapon_GetW_Model = 394,
-    SC_Weapon_GetV_Model = 395,
-    SC_Weapon_PrecacheCustomModels = 396,
-    SC_Weapon_IsMultiplayer = 397,
-    SC_Weapon_FRunfuncs = 398,
-    SC_Weapon_SetFOV = 399,
-    SC_Weapon_FCanRun = 400,
-    SC_Weapon_CustomDecrement = 401,
-    SC_Weapon_SetV_Model = 402,
-    SC_Weapon_SetP_Model = 403,
-    SC_Weapon_ChangeWeaponSkin = 404,
-    TFC_Killed = 405,
-    TFC_IsTriggered = 406,
-    TFC_Weapon_SendWeaponAnim = 407,
-    TFC_Weapon_GetNextAttackDelay = 408,
-    SC_TakeHealth = 409,
-    SC_TakeArmor = 410,
-    SC_GiveAmmo = 411,
-    SC_CheckAttacker = 412,
-    SC_Player_IsConnected = 413,
-    DOD_Weapon_SendWeaponAnim = 414,
-    CS_Item_IsWeapon = 415,
-    OPF_MySquadTalkMonsterPointer = 416,
-    OPF_WeaponTimeBase = 417,
-    TS_Weapon_AlternateAttack = 418,
-    Item_GetItemInfo = 419,
-    SC_PreSpawn = 420,
-    SC_PostSpawn = 421,
-    SC_OnKeyValueUpdate = 422,
-    SC_SetClassification = 423,
-    SC_IsTriggered = 424,
-    SC_MyCustomPointer = 425,
-    SC_MyItemPointer = 426,
-    SC_AddPoints = 427,
-    SC_AddPointsToTeam = 428,
-    SC_RemovePlayerItem = 429,
-    SC_OnControls = 430,
-    SC_IsSneaking = 431,
-    SC_IsAlive = 432,
-    SC_IsBSPModel = 433,
-    SC_ReflectGauss = 434,
-    SC_HasTarget = 435,
-    SC_IsInWorld = 436,
-    SC_IsPlayer = 437,
-    SC_IsNetClient = 438,
-    SC_IsBreakable = 439,
-    SC_SUB_UseTargets = 440,
-    SC_IsLockedByMaster = 441,
-    SC_FBecomeProne = 442,
-    SC_FVecVisible = 443,
-    SC_SetPlayerAlly = 444,
-    SC_OnSetOriginByMap = 445,
-    SC_IsRevivable = 446,
-    SC_BeginRevive = 447,
-    SC_EndRevive = 448,
-    SC_CanPlaySequence = 449,
-    SC_CanPlaySentence2 = 450,
-    SC_PlayScriptedSentence = 451,
-    SC_Item_AddToPlayer = 452,
-    SC_Item_AddDuplicate = 453,
-    SC_Item_AddAmmoFromItem = 454,
-    SC_Item_GetPickupSound = 455,
-    SC_Item_CanCollect = 456,
-    SC_Item_Collect = 457,
-    SC_Item_GetItemInfo = 458,
-    SC_Item_CanDeploy = 459,
-    SC_Item_Deploy = 460,
-    SC_Item_CanHolster = 461,
-    SC_Item_InactiveItemPreFrame = 462,
-    SC_Item_InactiveItemPostFrame = 463,
-    SC_Item_DetachFromPlayer = 464,
-    SC_Item_UpdateClientData = 465,
-    SC_Item_GetRespawnTime = 466,
-    SC_Item_CanHaveDuplicates = 467,
-    SC_Weapon_ExtractAmmoFromItem = 468,
-    SC_Weapon_AddWeapon = 469,
-    SC_Weapon_GetAmmo1Drop = 470,
-    SC_Weapon_GetAmmo2Drop = 471,
-    SC_Weapon_PlayEmptySound = 472,
-    SC_Weapon_IsUsable = 473,
-    SC_Weapon_FinishReload = 474,
-    SC_Weapon_ShouldReload = 475,
-    SC_Weapon_ShouldWeaponIdle = 476,
-    SC_Weapon_UseDecrement = 477,
-    SC_Player_EnteredObserver = 478,
-    SC_Player_LeftObserver = 479,
-    SC_Player_IsObserver = 480,
+  /** pev(entity, pev_flags) values - from const.h */
+  const enum FL {
+    DORMANT = -2147483648, // Entity is dormant, no updates to client
+    FLY = 1, // Changes the SV_Movestep() behavior to not need to be on ground
+    SWIM = 2, // Changes the SV_Movestep() behavior to not need to be on ground (but stay in water)
+    CONVEYOR = 4,
+    CLIENT = 8,
+    INWATER = 16,
+    MONSTER = 32,
+    GODMODE = 64,
+    NOTARGET = 128,
+    SKIPLOCALHOST = 256, // Don't send entity to local host, it's predicting this entity itself
+    ONGROUND = 512, // At rest / on the ground
+    PARTIALGROUND = 1024, // not all corners are valid
+    WATERJUMP = 2048, // player jumping out of water
+    FROZEN = 4096, // Player is frozen for 3rd person camera
+    FAKECLIENT = 8192, // JAC: fake client, simulated server side; don't send network messages to them
+    DUCKING = 16384, // Player flag -- Player is fully crouched
+    FLOAT = 32768, // Apply floating force to this entity when in water
+    GRAPHED = 65536, // worldgraph has this ent listed as something that blocks a connection
+    IMMUNE_WATER = 131072,
+    IMMUNE_SLIME = 262144,
+    IMMUNE_LAVA = 524288,
+    PROXY = 1048576, // This is a spectator proxy
+    ALWAYSTHINK = 2097152, // Brush model flag -- call think every frame regardless of nextthink - ltime (for constantly changing velocity/path)
+    BASEVELOCITY = 4194304, // Base velocity has been applied this frame (used to convert base velocity into momentum)
+    MONSTERCLIP = 8388608, // Only collide in with monsters who have FL_MONSTERCLIP set
+    ONTRAIN = 16777216, // Player is _controlling_ a train, so movement commands should be ignored on client during prediction.
+    WORLDBRUSH = 33554432, // Not moveable/removeable brush entity (really part of the world, but represented as an entity for transparency or something)
+    SPECTATOR = 67108864, // This client is a spectator, don't run touch functions, etc.
+    CUSTOMENTITY = 536870912, // This is a custom entity
+    KILLME = 1073741824, // This entity is marked for death -- This allows the engine to kill ents at the appropriate time
+  }
+  /** Trace flags for globalvars_t.trace_flags */
+  const enum FTRACE {
+    SIMPLEBOX = 1, // Traceline with a simple box
+    IGNORE_GLASS = 2, // traceline will be ignored entities with rendermode != kRenderNormal
+  }
+  /** engfunc(EngFunc_WalkMove) iMode values */
+  const enum WALKMOVE {
+    NORMAL = 0, // normal walkmove
+    WORLDONLY = 1, // doesn't hit ANY entities, no matter what the solid type
+    CHECKONLY = 2, // move, but don't touch triggers
+  }
+  /** pev(entity, pev_movetype) values */
+  const enum MOVETYPE {
+    NONE = 0, // never moves
+    WALK = 3, // Player only - moving on the ground
+    STEP = 4, // gravity, special edge handling -- monsters use this
+    FLY = 5, // No gravity, but still collides with stuff
+    TOSS = 6, // gravity/collisions
+    PUSH = 7, // no clip to world, push and crush
+    NOCLIP = 8, // No gravity, no collisions, still do velocity/avelocity
+    FLYMISSILE = 9, // extra size to monsters
+    BOUNCE = 10, // Just like Toss, but reflect velocity when contacting surfaces
+    BOUNCEMISSILE = 11, // bounce w/o gravity
+    FOLLOW = 12, // track movement of aiment
+    PUSHSTEP = 13, // BSP model that needs physics/world collisions (uses nearest hull for world collision)
+    COMPOUND = 14, // glue two entities together (simple movewith)
+  }
+  /** pev(entity, pev_solid) values */
+  const enum SOLID {
+    NOT = 0, // no interaction with other objects
+    TRIGGER = 1, // touch on edge, but not blocking
+    BBOX = 2, // touch on edge, block
+    SLIDEBOX = 3, // touch on edge, but not an onground
+    BSP = 4, // bsp clip, touch on edge, block
+    CUSTOM = 5, // call external callbacks for tracing
+  }
+  /** pev(entity, pev_deadflag) values */
+  const enum DEAD {
+    NO = 0, // alive
+    DYING = 1, // playing death animation or still falling off of a ledge waiting to hit ground
+    DEAD = 2, // dead. lying still.
+    RESPAWNABLE = 3,
+    DISCARDBODY = 4,
+  }
+  /** pev(entity, pev_takedamage) values */
+  const enum DAMAGE {
+    NO = 0,
+    YES = 1,
+    AIM = 2, // entity effects
+  }
+  /** pev(entity, pev_effects) values */
+  const enum EF {
+    BRIGHTFIELD = 1, // swirling cloud of particles
+    MUZZLEFLASH = 2, // single frame ELIGHT on entity attachment 0
+    BRIGHTLIGHT = 4, // DLIGHT centered at entity origin
+    DIMLIGHT = 8, // player flashlight
+    INVLIGHT = 16, // get lighting from ceiling
+    NOINTERP = 32, // don't interpolate the next frame
+    LIGHT = 64, // rocket flare glow sprite
+    NODRAW = 128, // don't draw entity
+    NIGHTVISION = 256, // player nightvision
+    SNIPERLASER = 512, // sniper laser effect
+    FIBERCAMERA = 1024, // fiber camera
+    NOREFLECT = 16777216, // Entity won't reflecting in mirrors
+    REFLECTONLY = 33554432, // Entity will be drawing only in mirrors
+    NOWATERCSG = 67108864, // Do not remove sides for func_water entity
+    FULLBRIGHT = 134217728, // Just get fullbright
+    NOSHADOW = 268435456, // ignore shadow for this entity
+    MERGE_VISIBILITY = 536870912, // this entity allowed to merge vis (e.g. env_sky or portal camera)
+    REQUEST_PHS = 1073741824, // This entity requested phs bitvector instead of pvsbitvector in AddToFullPack calls
+  }
+  /** Entity flags */
+  const enum EFLAG {
+    SLERP = 1, // do studio interpolation of this entity
+  }
+  /** Temp entity types for MSG_TYPE.TEMPENTITY messages */
+  const enum TE {
+    BEAMPOINTS = 0, // beam effect between two points
+    BEAMENTPOINT = 1, // beam effect between point and entity
+    GUNSHOT = 2, // particle effect plus ricochet sound
+    EXPLOSION = 3, // additive sprite, 2 dynamic lights, flickering particles, explosion sound, move vertically 8 pps
+    TAREXPLOSION = 4, // Quake1 "tarbaby" explosion with sound
+    SMOKE = 5, // alphablend sprite, move vertically 30 pps
+    TRACER = 6, // tracer effect from point to point
+    LIGHTNING = 7, // TE_BEAMPOINTS with simplified parameters
+    BEAMENTS = 8, // short (start entity)
+    SPARKS = 9, // 8 random tracers with gravity, ricochet sprite
+    LAVASPLASH = 10, // Quake1 lava splash
+    TELEPORT = 11, // Quake1 teleport splash
+    EXPLOSION2 = 12, // Quake1 colormaped (base palette) particle explosion with sound
+    BSPDECAL = 13, // Decal from the .BSP file
+    IMPLOSION = 14, // tracers moving toward a point
+    SPRITETRAIL = 15, // line of moving glow sprites with gravity, fadeout, and collisions
+    BEAM = 16, // obsolete
+    SPRITE = 17, // additive sprite, plays 1 cycle
+    BEAMSPRITE = 18, // A beam with a sprite at the end
+    BEAMTORUS = 19, // screen aligned beam ring, expands to max radius over lifetime
+    BEAMDISK = 20, // disk that expands to max radius over lifetime
+    BEAMCYLINDER = 21, // cylinder that expands to max radius over lifetime
+    BEAMFOLLOW = 22, // create a line of decaying beam segments until entity stops moving
+    GLOWSPRITE = 23, // coord, coord, coord (pos) short (model index) byte (scale / 10)
+    BEAMRING = 24, // connect a beam ring to two entities
+    STREAK_SPLASH = 25, // oriented shower of tracers
+    BEAMHOSE = 26, // obsolete
+    DLIGHT = 27, // dynamic light, effect world, minor entity effect
+    ELIGHT = 28, // point entity light, no world effect
+    TEXTMESSAGE = 29, // short 1.2.13 x (-1 = center)
+    LINE = 30, // coord, coord, coord	startpos
+    BOX = 31, // coord, coord, coord	boxmins
+    KILLBEAM = 99, // kill all beams attached to entity
+    LARGEFUNNEL = 100, // coord coord coord (funnel position)
+    BLOODSTREAM = 101, // particle spray
+    SHOWLINE = 102, // line of particles every 5 units, dies in 30 seconds
+    BLOOD = 103, // particle spray
+    DECAL = 104, // Decal applied to a brush entity (not the world)
+    FIZZ = 105, // create alpha sprites inside of entity, float upwards
+    MODEL = 106, // create a moving model that bounces and makes a sound when it hits
+    EXPLODEMODEL = 107, // spherical shower of models, picks from set
+    BREAKMODEL = 108, // box of models or sprites
+    GUNSHOTDECAL = 109, // decal and ricochet sound
+    SPRITE_SPRAY = 110, // spay of alpha sprites
+    ARMOR_RICOCHET = 111, // quick spark sprite, client ricochet sound.
+    PLAYERDECAL = 112, // ???
+    BUBBLES = 113, // create alpha sprites inside of box, float upwards
+    BUBBLETRAIL = 114, // create alpha sprites along a line, float upwards
+    BLOODSPRITE = 115, // spray of opaque sprite1's that fall, single sprite2 for 1..2 secs (this is a high-priority tent)
+    WORLDDECAL = 116, // Decal applied to the world brush
+    WORLDDECALHIGH = 117, // Decal (with texture index > 256) applied to world brush
+    DECALHIGH = 118, // Same as TE_DECAL, but the texture index was greater than 256
+    PROJECTILE = 119, // Makes a projectile (like a nail) (this is a high-priority tent)
+    SPRAY = 120, // Throws a shower of sprites or models
+    PLAYERSPRITES = 121, // sprites emit from a player's bounding box (ONLY use for players!)
+    PARTICLEBURST = 122, // very similar to lavasplash.
+    FIREFIELD = 123, // makes a field of fire.
+    PLAYERATTACHMENT = 124, // attaches a TENT to a player (this is a high-priority tent)
+    KILLPLAYERATTACHMENTS = 125, // will expire all TENTS attached to a player.
+    MULTIGUNSHOT = 126, // much more compact shotgun message
+    USERTRACER = 127, // larger message than the standard tracer, but allows some customization.
+  }
+  /** TE_EXPLOSION flags */
+  const enum TE_EXPLFLAG {
+    NONE = 0, // all flags clear makes default Half-Life explosion
+    NOADDITIVE = 1, // sprite will be drawn opaque (ensure that the sprite you send is a non-additive sprite)
+    NODLIGHTS = 2, // do not render dynamic lights
+    NOSOUND = 4, // do not play client explosion sound
+    NOPARTICLES = 8, // do not draw particles
+    DRAWALPHA = 16, // sprite will be drawn alpha
+    ROTATE = 32, // rotate the sprite randomly
+  }
+  /** TE bounce sound types for TE_MODEL */
+  const enum TE_BOUNCE {
+    NULL = 0,
+    SHELL = 1,
+    SHOTSHELL = 2, // Rendering constants
+  }
+  /** TE_FIREFIELD flags */
+  const enum TEFIRE_FLAG {
+    ALLFLOAT = 1, // all sprites will drift upwards as they animate
+    SOMEFLOAT = 2, // some of the sprites will drift upwards. (50% chance)
+    LOOP = 4, // if set, sprite plays at 15 fps, otherwise plays at whatever rate stretches the animation over the sprite's duration.
+    ALPHA = 8, // if set, sprite is rendered alpha blended at 50% else, opaque
+    PLANAR = 16, // if set, all fire sprites have same initial Z instead of randomly filling a cube.
+    ADDITIVE = 32, // if set, sprite is rendered non-opaque with additive
+  }
+  /** Message destination types for engine messaging */
+  const enum MSG {
+    BROADCAST = 0, // unreliable to all
+    ONE = 1, // reliable to one (msg_entity)
+    ALL = 2, // reliable to all
+    INIT = 3, // write to the init string
+    PVS = 4, // Ents in PVS of org
+    PAS = 5, // Ents in PAS of org
+    PVS_R = 6, // Reliable to PVS
+    PAS_R = 7, // Reliable to PAS
+    ONE_UNRELIABLE = 8, // Send to one client, but don't put in reliable stream, put in unreliable datagram ( could be dropped )
+    SPEC = 9, // Sends to all spectator proxies
+  }
+  /** engfunc(EngFunc_PointContents) return values */
+  const enum CONTENTS {
+    LADDER = -16,
+    TRANSLUCENT = -15,
+    CURRENT_DOWN = -14,
+    CURRENT_UP = -13,
+    CURRENT_270 = -12,
+    CURRENT_180 = -11,
+    CURRENT_90 = -10,
+    CURRENT_0 = -9,
+    CLIP = -8, // changed to contents_solid
+    ORIGIN = -7, // removed at csg time
+    SKY = -6, // These additional contents constants are defined in bspfile.h
+    LAVA = -5,
+    SLIME = -4,
+    WATER = -3,
+    SOLID = -2,
+    EMPTY = -1,
+  }
+  /** Sound channel constants */
+  const enum CHAN {
+    AUTO = 0,
+    WEAPON = 1,
+    VOICE = 2,
+    ITEM = 3,
+    BODY = 4,
+    STREAM = 5, // allocate stream channel from the static or dynamic area
+    STATIC = 6, // allocate channel from the static area
+    NETWORKVOICE_BASE = 7, // voice data coming across the network
+    NETWORKVOICE_END = 500, // network voice data reserves slots (CHAN_NETWORKVOICE_BASE through CHAN_NETWORKVOICE_END).
+    BOT = 501, // channel used for bot chatter.
+  }
+  /** Sound attenuation constants for pfnEmitSound */
+  const enum ATTN {
+    NONE = 0,
+    NORM = 0.8,
+    STATIC = 1.25, // pitch values
+    IDLE = 2,
+  }
+  /** Sound pitch constants */
+  const enum PITCH {
+    LOW = 95, // other values are possible - 0-255, where 255 is very high
+    NORM = 100, // non-pitch shifted
+    HIGH = 120, // volume values
+  }
+  /** Sound volume constants */
+  const enum VOL {
+    NORM = 1, // plats
+  }
+  /** pev(entity, pev_button) or pev(entity, pev_oldbuttons) values */
+  const enum IN {
+    ATTACK = 1,
+    JUMP = 2,
+    DUCK = 4,
+    FORWARD = 8,
+    BACK = 16,
+    USE = 32,
+    CANCEL = 64,
+    LEFT = 128,
+    RIGHT = 256,
+    MOVELEFT = 512,
+    MOVERIGHT = 1024,
+    ATTACK2 = 2048,
+    RUN = 4096,
+    RELOAD = 8192,
+    ALT1 = 16384,
+    SCORE = 32768, // Used by client.dll for when scoreboard is held down
+  }
+  /** Break model material types */
+  const enum BREAK {
+    GLASS = 1,
+    METAL = 2,
+    FLESH = 4,
+    WOOD = 8,
+    SMOKE = 16,
+    TRANS = 32,
+    CONCRETE = 64,
+    TYPEMASK = 79,
+    _2 = 128, // Colliding temp entity sounds
+  }
+  /** Colliding temp entity sound types */
+  const enum BOUNCE {
+    SHRAP = 16,
+    SHELL = 32,
+    SHOTSHELL = 128, // Temp entity bounce sound types
+  }
+  /** Rendering modes */
+  const enum kRenderMode {
+    kRenderNormal = 0, // src
+    kRenderTransColor = 1, // c*a+dest*(1-a)
+    kRenderTransTexture = 2, // src*a+dest*(1-a)
+    kRenderGlow = 3, // src*a+dest -- No Z buffer checks
+    kRenderTransAlpha = 4, // src*srca+dest*(1-srca)
+    kRenderTransAdd = 5, // src*a+dest
+    kRenderWorldGlow = 6, // Same as kRenderGlow but not fixed size in screen space
+  }
+  /** Rendering effects */
+  const enum kRenderFx {
+    kRenderFxNone = 0,
+    kRenderFxPulseSlow = 1,
+    kRenderFxPulseFast = 2,
+    kRenderFxPulseSlowWide = 3,
+    kRenderFxPulseFastWide = 4,
+    kRenderFxFadeSlow = 5,
+    kRenderFxFadeFast = 6,
+    kRenderFxSolidSlow = 7,
+    kRenderFxSolidFast = 8,
+    kRenderFxStrobeSlow = 9,
+    kRenderFxStrobeFast = 10,
+    kRenderFxStrobeFaster = 11,
+    kRenderFxFlickerSlow = 12,
+    kRenderFxFlickerFast = 13,
+    kRenderFxNoDissipation = 14,
+    kRenderFxDistort = 15, // Distort/scale/translate flicker
+    kRenderFxHologram = 16, // kRenderFxDistort + distance fade
+    kRenderFxDeadPlayer = 17, // kRenderAmt is the player index
+    kRenderFxExplode = 18, // Scale up really big!
+    kRenderFxGlowShell = 19, // Glowing Shell
+    kRenderFxClampMinScale = 20, // Keep this sprite from getting very small (SPRITES only!)
+    kRenderFxLightMultiplier = 21, // CTM !!!CZERO added to tell the studiorender that the value in iuser2 is a lightmultiplier
   }
 }

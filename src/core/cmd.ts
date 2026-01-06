@@ -33,11 +33,11 @@ export interface ServerCommandContext {
 }
 
 /** Return type for command handlers - can be sync or async */
-type CommandResult = nodemod.META_RES | void | Promise<nodemod.META_RES | void>;
+type CommandResult = nodemod.MRES | void | Promise<nodemod.MRES | void>;
 
 /**
  * Handler function for console commands (client or server).
- * Can optionally return a META_RES value to set the result.
+ * Can optionally return a MRES value to set the result.
  */
 export interface CommandHandler {
   (ctx: CommandContext): CommandResult;
@@ -45,7 +45,7 @@ export interface CommandHandler {
 
 /**
  * Handler function for client commands.
- * Can optionally return a META_RES value to set the result.
+ * Can optionally return a MRES value to set the result.
  */
 export interface ClientCommandHandler {
   (ctx: ClientCommandContext): CommandResult;
@@ -53,7 +53,7 @@ export interface ClientCommandHandler {
 
 /**
  * Handler function for server commands.
- * Can optionally return a META_RES value to set the result.
+ * Can optionally return a MRES value to set the result.
  */
 export interface ServerCommandHandler {
   (ctx: ServerCommandContext): CommandResult;
@@ -150,7 +150,7 @@ export default class NodemodCmd {
   constructor() {
     nodemod.on('dllClientCommand', (client: nodemod.Entity, rtext: string) => {
       // Check if a previous listener already blocked this command
-      if (nodemod.getMetaResult() === nodemod.META_RES.SUPERCEDE) {
+      if (nodemod.getMetaResult() === nodemod.MRES.SUPERCEDE) {
         return;
       }
 
@@ -178,22 +178,22 @@ export default class NodemodCmd {
           result = (command.handler as CommandHandler)(ctx);
         }
 
-        // If handler returned a sync META_RES value, set it (ignore Promises)
+        // If handler returned a sync MRES value, set it (ignore Promises)
         if (typeof result === 'number') {
           nodemod.setMetaResult(result);
         }
 
         // Check if handler blocked the command - stop processing further handlers
         const mres = nodemod.getMetaResult();
-        if (mres === nodemod.META_RES.SUPERCEDE) {
+        if (mres === nodemod.MRES.SUPERCEDE) {
           break;
         }
       }
 
       // Auto-SUPERCEDE only for console commands (register/registerServer)
       // Client-only commands (registerClient) let the plugin decide
-      if (clientCommands.length === 0 && nodemod.getMetaResult() === nodemod.META_RES.IGNORED) {
-        nodemod.setMetaResult(nodemod.META_RES.SUPERCEDE);
+      if (clientCommands.length === 0 && nodemod.getMetaResult() === nodemod.MRES.IGNORED) {
+        nodemod.setMetaResult(nodemod.MRES.SUPERCEDE);
       }
     });
   }
@@ -295,7 +295,7 @@ export default class NodemodCmd {
    * Convenience method to register a console command that works from both client and server.
    * Similar to AMXX console commands - can be executed by clients or from server console.
    * The handler receives the client (null if from console) and arguments.
-   * Can optionally return a META_RES value to set the result.
+   * Can optionally return a MRES value to set the result.
    *
    * @param name - The command name
    * @param handler - Function that receives the client entity (or null) and arguments
@@ -308,7 +308,7 @@ export default class NodemodCmd {
    *   } else {
    *     console.log('Server console requested status');
    *   }
-   *   return nodemod.META_RES.SUPERCEDE; // optional
+   *   return nodemod.MRES.SUPERCEDE; // optional
    * });
    * ```
    */
@@ -323,7 +323,7 @@ export default class NodemodCmd {
   /**
    * Convenience method to register a client-only command with a simplified handler signature.
    * The handler receives the client entity and arguments (excluding the command name).
-   * Can optionally return a META_RES value to set the result.
+   * Can optionally return a MRES value to set the result.
    *
    * @param name - The command name
    * @param handler - Function that receives the client and arguments
@@ -334,7 +334,7 @@ export default class NodemodCmd {
    *   const message = args.join(' ');
    *   console.log(`${client.name} said: ${message}`);
    *   // No return = IGNORED, chat passes through to engine
-   *   // return nodemod.META_RES.SUPERCEDE; // to block the chat
+   *   // return nodemod.MRES.SUPERCEDE; // to block the chat
    * });
    * ```
    */
@@ -349,7 +349,7 @@ export default class NodemodCmd {
   /**
    * Convenience method to register a server command with a simplified handler signature.
    * The handler receives the arguments (excluding the command name) but no client entity.
-   * Can optionally return a META_RES value to set the result.
+   * Can optionally return a MRES value to set the result.
    *
    * @param name - The command name
    * @param handler - Function that receives the command arguments

@@ -336,7 +336,7 @@ export default class NodemodMsg extends EventEmitter {
 
     this.state.data.push(value);
     this.state.rawData.push({ type, value });
-    nodemod.setMetaResult(nodemod.META_RES.SUPERCEDE);
+    nodemod.setMetaResult(nodemod.MRES.SUPERCEDE);
   }
 
   /**

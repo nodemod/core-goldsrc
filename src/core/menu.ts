@@ -331,7 +331,7 @@ export default class NodemodMenu {
       return;
     }
 
-    nodemod.setMetaResult(nodemod.META_RES.SUPERCEDE); // Supercede the command
+    nodemod.setMetaResult(nodemod.MRES.SUPERCEDE); // Supercede the command
 
     // Handle special navigation options
     if (selection === 0 || selection === 10) { // Exit (0 key sends 10)
@@ -495,6 +495,9 @@ export default class NodemodMenu {
     });
   }
 
+  /** Maximum bytes per ShowMenu packet (matching AMX Mod X's 175 byte limit) */
+  private readonly MAX_MENU_CHUNK_SIZE = 175;
+
   private showMenuInternal(menu: Menu, client: nodemod.Entity, state: MenuState, page: number): void {
     state.currentPage = page;
     state.menu = menu;
@@ -514,16 +517,48 @@ export default class NodemodMenu {
 
     const { menuText, keyMask } = this.buildMenuDisplay(menu, page);
 
-    this.msg.send({
-      type: 'ShowMenu',
-      entity: client,
-      data: [
-        { type: 'short', value: keyMask },
-        { type: 'char', value: menu.time },
-        { type: 'byte', value: false },
-        { type: 'string', value: menuText }
-      ]
-    });
+    // Send menu in chunks if it exceeds the max packet size (multi-packet menu support)
+    this.sendMenuChunked(client, keyMask, menu.time, menuText);
+  }
+
+  /**
+   * Sends a menu message, splitting into multiple packets if needed.
+   * This matches AMX Mod X's UTIL_ShowMenu behavior for menus > 175 bytes.
+   *
+   * @param client - Target client entity
+   * @param keyMask - Bitmask of valid menu keys
+   * @param time - Menu display time (-1 for infinite)
+   * @param menuText - Full menu text to send
+   */
+  private sendMenuChunked(client: nodemod.Entity, keyMask: number, time: number, menuText: string): void {
+    const textBytes = Buffer.from(menuText, 'utf8');
+    let offset = 0;
+
+    while (offset < textBytes.length) {
+      // Calculate chunk size (max 175 bytes, but don't split UTF-8 characters)
+      let chunkEnd = Math.min(offset + this.MAX_MENU_CHUNK_SIZE, textBytes.length);
+
+      // Avoid splitting multi-byte UTF-8 characters
+      while (chunkEnd > offset && (textBytes[chunkEnd] & 0xC0) === 0x80) {
+        chunkEnd--;
+      }
+
+      const chunk = textBytes.slice(offset, chunkEnd).toString('utf8');
+      const hasMore = chunkEnd < textBytes.length;
+
+      this.msg.send({
+        type: 'ShowMenu',
+        entity: client,
+        data: [
+          { type: 'short', value: keyMask },
+          { type: 'char', value: time },
+          { type: 'byte', value: hasMore },
+          { type: 'string', value: chunk }
+        ]
+      });
+
+      offset = chunkEnd;
+    }
   }
 
   private buildMenuDisplay(menu: Menu, page: number): { menuText: string, keyMask: number } {

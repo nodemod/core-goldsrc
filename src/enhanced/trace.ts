@@ -177,7 +177,87 @@ export default class NodemodTrace {
     const trace = this.fromEntity(entity1, entity2Obj, options);
     return trace !== null && (trace.fraction >= 1.0 || trace.hitEntity === entity2);
   }
-  
+
+  /**
+   * Checks if a point is within an entity's field of view (view cone).
+   * Uses the entity's FOV setting to determine the cone angle.
+   *
+   * @param entity - Entity to check from (uses its origin, angles, and FOV)
+   * @param point - 3D point [x, y, z] to check
+   * @param use3d - If true, uses v_angle and view_ofs for accurate 3D check; if false, uses 2D check ignoring Z
+   * @returns True if the point is within the entity's view cone
+   *
+   * @example
+   * ```typescript
+   * // Check if player can see a point (2D check, ignores vertical angle)
+   * const canSeePoint = nodemodCore.trace.isInViewCone(player, [100, 200, 50]);
+   *
+   * // Full 3D check using player's actual view angle
+   * const canSeePoint3D = nodemodCore.trace.isInViewCone(player, [100, 200, 50], true);
+   *
+   * // Check if NPC is facing the player
+   * const npcFacingPlayer = nodemodCore.trace.isInViewCone(npc, player.origin);
+   * ```
+   */
+  isInViewCone(entity: nodemod.Entity | number, point: number[], use3d: boolean = false): boolean {
+    const entityObj = typeof entity === 'number' ?
+      nodemod.eng.pEntityOfEntIndex(entity) : entity;
+
+    if (!entityObj) return false;
+
+    // Get the appropriate angles and compute forward vector
+    const angles = use3d ? entityObj.v_angle : entityObj.angles;
+    let forward = [0, 0, 0];
+    const right = [0, 0, 0];
+    const up = [0, 0, 0];
+    nodemod.eng.angleVectors(angles, forward, right, up);
+
+    // Calculate vector from entity to point (line of sight)
+    let entityOrigin: number[];
+    if (use3d) {
+      entityOrigin = [
+        entityObj.origin[0] + (entityObj.view_ofs?.[0] || 0),
+        entityObj.origin[1] + (entityObj.view_ofs?.[1] || 0),
+        entityObj.origin[2] + (entityObj.view_ofs?.[2] || 0)
+      ];
+    } else {
+      entityOrigin = [...entityObj.origin];
+    }
+
+    let vecLOS = [
+      point[0] - entityOrigin[0],
+      point[1] - entityOrigin[1],
+      point[2] - entityOrigin[2]
+    ];
+
+    // For 2D check, zero out the Z component
+    if (!use3d) {
+      forward[2] = 0;
+      vecLOS[2] = 0;
+    }
+
+    // Normalize the line of sight vector
+    const losLength = Math.sqrt(vecLOS[0] ** 2 + vecLOS[1] ** 2 + vecLOS[2] ** 2);
+    if (losLength === 0) return true; // Point is at entity's origin
+    vecLOS = [vecLOS[0] / losLength, vecLOS[1] / losLength, vecLOS[2] / losLength];
+
+    // Normalize forward vector (needed for 2D case where we zeroed Z)
+    const fwdLength = Math.sqrt(forward[0] ** 2 + forward[1] ** 2 + forward[2] ** 2);
+    if (fwdLength > 0) {
+      forward = [forward[0] / fwdLength, forward[1] / fwdLength, forward[2] / fwdLength];
+    }
+
+    // Calculate dot product
+    const dot = vecLOS[0] * forward[0] + vecLOS[1] * forward[1] + vecLOS[2] * forward[2];
+
+    // Compare against FOV (default to 90 degrees if not set)
+    const fov = entityObj.fov || 90;
+    // FOV is full angle, so divide by 2 and convert to radians
+    const threshold = Math.cos(fov * (Math.PI / 360));
+
+    return dot >= threshold;
+  }
+
   // Trace downward to find ground
   findGround(origin: number[], distance: number = 4096): EnhancedTraceResult | null {
     const start = [...origin];

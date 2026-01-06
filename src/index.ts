@@ -105,7 +105,7 @@ class NodemodCore {
    * Set the metamod result for the current hook
    * @param result The metamod result constant
    */
-  setMetaResult(result: nodemod.META_RES): void { return nodemod.setMetaResult(result); }
+  setMetaResult(result: nodemod.MRES): void { return nodemod.setMetaResult(result); }
   
   /**
    * Continue server execution (used with metamod hooks)
